@@ -1,0 +1,10 @@
+{
+    "redirects": [
+      {
+        "source": "/old-route",
+        "destination": "/new-route",
+        "permanent": true
+      }
+    ]
+  }
+  
