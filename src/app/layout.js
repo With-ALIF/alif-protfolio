@@ -1,8 +1,7 @@
 
 
 import "./globals.css";
-import Navbar from "./components/shared/Navbar";
-import Footer from "./components/shared/Footer";
+import SiteChrome from "./components/shared/SiteChrome";
 import { getSiteSection } from "@/lib/cms";
 
 export const metadata = {
@@ -54,8 +53,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body data-theme="dark" className="min-h-screen bg-[#0f0f0f] text-white">
-        <Navbar profile={site.profile} nav={site.nav}>{children}</Navbar> 
-        <Footer profile={site.profile} />
+        <SiteChrome profile={site.profile} nav={site.nav}>{children}</SiteChrome>
       </body>
     </html>
   );

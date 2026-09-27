@@ -10,6 +10,7 @@ const nextConfig = {
   images: {
     domains: [
       "i.postimg.cc",
+      "cvmmpnpvstrwgfmhfplw.supabase.co",
       "images.unsplash.com",
       "s3-ap-south-1.amazonaws.com",
       "wk-partners.co.jp",

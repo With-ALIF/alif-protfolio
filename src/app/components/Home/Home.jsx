@@ -98,14 +98,14 @@ export default function Home({ profile = siteProfile, hero = heroFallback }) {
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative rounded-lg border border-white/10 bg-zinc-950/70 p-5 shadow-2xl"
+          className="relative rounded-lg border border-white/10 bg-zinc-950/70 p-4 shadow-2xl"
         >
           <div className="absolute right-4 top-4 z-10 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
             Open to Remote Work
           </div>
-          <div className="flex items-center justify-center pt-8">
+          <div className="flex items-center justify-center pt-7">
       <div className="flex items-center justify-center">
-  <div className="relative overflow-hidden rounded-lg w-[clamp(180px,28vw,340px)] h-[clamp(180px,28vw,340px)]">
+  <div className="relative overflow-hidden rounded-lg w-[clamp(120px,12vw,170px)] h-[clamp(120px,12vw,170px)]">
     <Image
       src={profile.profileImage}
       alt={`${profile.name} portrait`}
@@ -117,30 +117,30 @@ export default function Home({ profile = siteProfile, hero = heroFallback }) {
   </div>
 </div>
           </div>
-          <div className="mt-5 space-y-4">
+          <div className="mt-3 space-y-3">
             <div>
               <p className="text-sm uppercase text-zinc-400">{profile.role}</p>
-              <h2 className="mt-1 text-2xl font-semibold">{profile.name}</h2>
-              <p className="mt-2 text-zinc-300">
+              <h2 className="mt-1 text-xl font-semibold">{profile.name}</h2>
+              <p className="mt-1 text-sm leading-6 text-zinc-300">
                 Practical product developer focused on clean APIs, responsive UI,
                 authentication, dashboards, and maintainable delivery.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <a href="#skills" className="rounded-lg border border-white/10 p-4 hover:bg-white/10">
-                <Code2 className="mb-3 h-5 w-5 text-blue-300" />
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <a href="#skills" className="rounded-lg border border-white/10 p-3 hover:bg-white/10">
+                <Code2 className="mb-2 h-5 w-5 text-blue-300" />
                 Tech arsenal
               </a>
-              <a href="#about" className="rounded-lg border border-white/10 p-4 hover:bg-white/10">
-                <UserRound className="mb-3 h-5 w-5 text-blue-300" />
+              <a href="#about" className="rounded-lg border border-white/10 p-3 hover:bg-white/10">
+                <UserRound className="mb-2 h-5 w-5 text-blue-300" />
                 Quick bio
               </a>
-              <a href="#services" className="rounded-lg border border-white/10 p-4 hover:bg-white/10">
-                <BriefcaseBusiness className="mb-3 h-5 w-5 text-blue-300" />
+              <a href="#services" className="rounded-lg border border-white/10 p-3 hover:bg-white/10">
+                <BriefcaseBusiness className="mb-2 h-5 w-5 text-blue-300" />
                 Services
               </a>
-              <a href="#projects" className="rounded-lg border border-white/10 p-4 hover:bg-white/10">
-                <Terminal className="mb-3 h-5 w-5 text-blue-300" />
+              <a href="#projects" className="rounded-lg border border-white/10 p-3 hover:bg-white/10">
+                <Terminal className="mb-2 h-5 w-5 text-blue-300" />
                 Case studies
               </a>
             </div>

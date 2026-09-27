@@ -15,8 +15,7 @@ export default function Projects({ items, tagIcons }) {
         transition={{ duration: 0.45 }}
         className="mx-auto max-w-3xl text-center"
       >
-        <p className="text-sm font-semibold uppercase text-blue-300">Portfolio projects</p>
-        <h1 className="mt-3 text-4xl font-bold tracking-normal sm:text-5xl">Selected case studies</h1>
+        <h1 className="text-4xl font-bold tracking-normal sm:text-5xl">Featured Projects</h1>
         <p className="mt-4 text-zinc-300">
           A focused look at full-stack products, the problems they solve, the stack behind them, and the role I played.
         </p>

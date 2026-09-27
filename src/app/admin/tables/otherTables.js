@@ -1,0 +1,99 @@
+import { F } from "./base";
+
+export const otherTables = [
+  {
+    name: "alif_skills",
+    label: "Skills",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.group || "Other"} · ${r.name}`,
+    fields: [
+      F("name", "Name"),
+      F("icon", "Icon URL + Upload", "image"),
+      F("group", "Group", "select", {
+        options: ["Languages", "Frameworks", "Backend Services", "Tools", "Other"],
+      }),
+      F("level", "Level (0-100)", "number"),
+      F("sort_order", "Sort order", "number"),
+    ],
+  },
+  {
+    name: "alif_tools",
+    label: "Tools",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.name}`,
+    fields: [F("name", "Name"), F("icon", "Icon URL + Upload", "image"), F("sort_order", "Sort order", "number")],
+  },
+  {
+    name: "alif_tag",
+    label: "Icons",
+    orderBy: "sort_order",
+    listBy: (r) => r.name,
+    fields: [F("name", "Name"), F("icon", "Icon URL + Upload", "image"), F("sort_order", "Sort order", "number")],
+  },
+  {
+    name: "alif_education",
+    label: "Education",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.degree} — ${r.institute}`,
+    fields: [
+      F("degree", "Degree"),
+      F("institute", "Institute"),
+      F("district", "District"),
+      F("class", "Class / Level"),
+      F("year", "Year"),
+      F("description", "Description", "textarea"),
+      F("logo", "Logo URL + Upload", "image"),
+      F("sort_order", "Sort order", "number"),
+    ],
+  },
+  {
+    name: "alif_experience",
+    label: "Experience",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.role} @ ${r.company}`,
+    fields: [
+      F("role", "Role"),
+      F("company", "Company"),
+      F("logo", "Logo URL + Upload", "image"),
+      F("duration", "Duration"),
+      F("status", "Status"),
+      F("sort_order", "Sort order", "number"),
+    ],
+  },
+  {
+    name: "alif_services",
+    label: "Services",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.title}`,
+    fields: [
+      F("title", "Title"),
+      F("icon", "Icon", "select", { options: ["code", "monitor", "brush", "wrench"] }),
+      F("description", "Description", "textarea"),
+      F("sort_order", "Sort order", "number"),
+    ],
+  },
+  {
+    name: "alif_reviews",
+    label: "Reviews",
+    orderBy: "created_at",
+    listBy: (r) => r.name,
+    fields: [
+      F("name", "Name"),
+      F("image", "Image URL + Upload", "image"),
+      F("comment", "Comment", "textarea"),
+      F("is_published", "Published", "bool"),
+    ],
+  },
+  {
+    name: "alif_journey",
+    label: "Journey",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.label} — ${r.title}`,
+    fields: [
+      F("label", "Year label"),
+      F("title", "Title"),
+      F("description", "Description", "textarea"),
+      F("sort_order", "Sort order", "number"),
+    ],
+  },
+];

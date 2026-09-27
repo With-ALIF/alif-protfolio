@@ -25,14 +25,14 @@ function serverClient() {
   });
 }
 
-async function fetchTable(name) {
+async function fetchTable(name, orderBy = "sort_order") {
   try {
     const sb = serverClient();
     if (!sb) return null;
     const { data, error } = await sb
       .from(name)
       .select("*")
-      .order("sort_order", { ascending: true });
+      .order(orderBy, { ascending: true });
     if (error || !data || data.length === 0) return null;
     return data;
   } catch {
@@ -92,6 +92,7 @@ export async function getCmsBundle() {
     educationRows,
     experienceRows,
     serviceRows,
+    journeyRows,
   ] = await Promise.all([
     fetchSection("site"),
     fetchSection("hero"),
@@ -99,13 +100,14 @@ export async function getCmsBundle() {
     fetchSection("journey"),
     fetchSection("awards"),
     fetchTable("alif_projects"),
-    fetchTable("alif_project_details"),
+    fetchTable("alif_project_details", "slug"),
     fetchTable("alif_skills"),
     fetchTable("alif_tools"),
     fetchTable("alif_tag"),
     fetchTable("alif_education"),
     fetchTable("alif_experience"),
     fetchTable("alif_services"),
+    fetchTable("alif_journey"),
   ]);
 
   // --- site / hero / about ---
@@ -131,11 +133,22 @@ export async function getCmsBundle() {
   };
 
   // --- journey / awards ---
+  // Priority: alif_journey table → site_content section → local fallback.
   const journey = {
-    items:
-      Array.isArray(journeySection?.items) && journeySection.items.length > 0
-        ? journeySection.items
-        : journeyMilestones,
+    items: (() => {
+      if (journeyRows) {
+        const grouped = new Map();
+        for (const r of journeyRows) {
+          const label = r.label || "";
+          if (!grouped.has(label)) grouped.set(label, []);
+          grouped.get(label).push({ title: r.title, desc: r.description ?? "" });
+        }
+        const items = [...grouped.entries()].map(([label, items]) => ({ label, items }));
+        if (items.length > 0) return items;
+      }
+      if (Array.isArray(journeySection?.items) && journeySection.items.length > 0) return journeySection.items;
+      return journeyMilestones;
+    })(),
   };
   const awardsList = (() => {
     const items = Array.isArray(awardsSection?.items) ? awardsSection.items : localAwards;
@@ -148,8 +161,12 @@ export async function getCmsBundle() {
     .sort(bySort);
   const studies = {};
   if (detailRows) {
+    // Primary link: project_id → project slug. Fallback: row slug.
+    const slugById = {};
+    for (const r of projectRows || []) slugById[r.id] = r.slug;
     for (const row of detailRows) {
-      if (row.slug) studies[row.slug] = row;
+      const key = (row.project_id && slugById[row.project_id]) || row.slug;
+      if (key) studies[key] = row;
     }
   } else {
     for (const s of localStudies) studies[s.id] = s;

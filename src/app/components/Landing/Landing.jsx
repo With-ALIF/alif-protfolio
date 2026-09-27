@@ -31,14 +31,14 @@ export default function Landing({ cms }) {
 
   return (
     <div className="space-y-20 text-white sm:space-y-28">
-      <section id="home" className="scroll-mt-24">
+      <section id="home" className="scroll-mt-24 pt-10 sm:pt-14">
         <Home profile={d.site?.profile} hero={d.hero} />
       </section>
 
       <section id="about" className="scroll-mt-24">
         <div className="mx-auto max-w-screen-xl space-y-12 sm:space-y-16">
           <Reveal>
-            <About paragraphs={d.about?.paragraphs} />
+            <About paragraphs={d.about?.paragraphs} image={d.site?.profile?.profileImage} />
           </Reveal>
           <Reveal>
             <EducationSection items={d.education} />

@@ -1,13 +1,16 @@
 import Image from "next/image";
-import { ArrowLeft, Database, ExternalLink, Github } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
 import { projects as localProjects, getCaseStudy as localGetCaseStudy } from "@/data/projects";
 import { getCmsBundle } from "@/lib/cms";
 
 export const dynamic = "force-dynamic";
 
-const Section = ({ title, children }) => (
+const Section = ({ icon: Icon, title, children }) => (
   <section className="rounded-lg border border-white/10 bg-white/[0.03] p-6">
-    <h2 className="text-2xl font-semibold">{title}</h2>
+    <h2 className="flex items-center gap-2 text-2xl font-semibold">
+      {Icon ? <Icon className="h-6 w-6 text-blue-300" /> : null}
+      {title}
+    </h2>
     <div className="mt-4 text-zinc-300">{children}</div>
   </section>
 );
@@ -129,7 +132,7 @@ export default async function ProjectDetails({ params }) {
         />
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
           <p className="text-sm text-zinc-400">Status</p>
           <p className="mt-1 font-semibold">{status}</p>
@@ -147,13 +150,13 @@ export default async function ProjectDetails({ params }) {
       </div>
 
       {fullDescription && (
-        <Section title="Overview">
+        <Section icon={LayoutDashboard} title="Overview">
           <Paragraphs text={fullDescription} />
         </Section>
       )}
 
       {statisticsEntries.length > 0 && (
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {statisticsEntries.map(([label, value]) => (
             <div
               key={label}
@@ -167,7 +170,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {features.length > 0 && (
-        <Section title="Key Features">
+        <Section icon={ListChecks} title="Key Features">
           <ul className="grid gap-3 sm:grid-cols-2">
             {features.map((feature) => (
               <li
@@ -182,7 +185,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {technologies.length > 0 && (
-        <Section title="Tech Stack">
+        <Section icon={Layers} title="Tech Stack">
           <div className="flex flex-wrap gap-3">
             {technologies.map((tech) => (
               <span
@@ -206,7 +209,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {gallery.length > 0 && (
-        <Section title="Screenshots">
+        <Section icon={Images} title="Screenshots">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {gallery.map((item, index) => (
               <figure key={item.image} className="overflow-hidden rounded-md border border-white/10">
@@ -229,7 +232,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {timeline.length > 0 && (
-        <Section title="Timeline">
+        <Section icon={History} title="Timeline">
           <div className="space-y-4">
             {timeline.map((item) => (
               <div
@@ -237,7 +240,7 @@ export default async function ProjectDetails({ params }) {
                 className="rounded-lg border border-white/10 bg-black/20 p-4"
               >
                 <div className="flex gap-4">
-                  <span className="flex h-10 w-fit shrink-0 items-center justify-center rounded-full bg-blue-500/15 px-3 text-sm font-semibold text-blue-200">
+                  <span className="flex h-10 w-fit shrink-0 items-center justify-center rounded-full bg-green-500/15 px-3 text-sm font-semibold text-green-200">
                     {item.date}
                   </span>
                   <div>
@@ -253,7 +256,7 @@ export default async function ProjectDetails({ params }) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {challenges.length > 0 && (
-          <Section title="Challenges">
+          <Section icon={AlertTriangle} title="Challenges">
             <ul className="list-disc space-y-2 pl-5">
               {challenges.map((item) => (
                 <li key={item}>{item}</li>
@@ -262,7 +265,7 @@ export default async function ProjectDetails({ params }) {
           </Section>
         )}
         {solutions.length > 0 && (
-          <Section title="Solutions">
+          <Section icon={Lightbulb} title="Solutions">
             <ul className="list-disc space-y-2 pl-5">
               {solutions.map((item) => (
                 <li key={item}>{item}</li>
@@ -295,7 +298,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {links.length > 0 && (
-        <Section title="Links">
+        <Section icon={Link2} title="Links">
           <div className="flex flex-wrap gap-3">
             {links.map(({ label, href, icon: Icon }) => (
               <a
