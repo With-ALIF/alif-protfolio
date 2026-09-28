@@ -1,125 +1,200 @@
-# Alif Portfolio — Next.js + Supabase CMS
+﻿<h1 align="center">
+  Md Abdullah Al Khalid Alif — Portfolio
+</h1>
 
-Personal portfolio of **Md Abdullah Al Khalid Alif** — a single-page Next.js 15
-app (React 19) whose content is managed from a private **`/admin` CMS backed by
-Supabase**. Live at [https://alif.mnr.bd](https://alif.mnr.bd).
+<p align="center">
+  Personal portfolio website of <strong>Md Abdullah Al Khalid Alif</strong>, a Full Stack Software Engineer specializing in MERN stack and Next.js applications.
+</p>
 
-## Sections (single scrolling page `/`)
+<p align="center">
+  <a href="https://alif.mnr.bd" target="_blank"><img src="https://img.shields.io/badge/Live-alif.mnr.bd-0f0f0f?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Site" /></a>
+  <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 15" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+</p>
 
-| Section | Anchor | Content source |
-|---|---|---|
-| Hero + stats | `#home` | `site` + `hero` site-content, profile |
-| About + Education | `#about` | `about` site-content, `alif_education` |
-| Skills | `#skills` | `alif_skills` (+group) + `alif_tools`, icons from `alif_tag` |
-| Experience summary + history | `#experience` | `hero.highlights`, `alif_experience` |
-| Journey timeline | `#journey` | `journey` site-content |
-| Projects + case studies | `#projects`, `/projects/[id]` | `alif_projects` + `alif_project_details` (FK cascade) |
-| Services | `#services` | `alif_services` (lucide icon names) |
-| Awards | `#achievements` | `awards` site-content |
-| Contact form + socials | `#contact` | profile + EmailJS |
+---
 
-All Supabase reads go through `src/lib/cms.js`, which falls back to the local
-files in `src/data/` when a table is empty or unreachable — the site never
-renders blank.
+## 🌐 Overview
 
-## Tech stack
+A modern, CMS-driven personal portfolio built with **Next.js 15** and **React 19**. The site showcases projects, skills, work experience, education, awards, and services — all managed through a **Supabase** backend with a private admin panel.
 
-- Next.js 15 (App Router) + React 19
-- Supabase (Postgres + Auth) via `@supabase/supabase-js`
-- Contact mail via `@emailjs/browser`
-- Styling: Tailwind CSS + daisyUI, framer-motion animations,
-  lucide-react / react-icons
-- Optional MongoDB archive for contact messages (`src/models`, `src/utils`)
+The portfolio is fully SEO-optimized with dynamic metadata, Open Graph tags, a sitemap, and a `robots.txt` — designed to rank and perform in production.
 
-## Getting started
+---
 
-```bash
-npm install
-npm run dev      # http://localhost:3000
-npm run lint
-npm run build    # production build (dev server must be stopped first)
-npm start
+## ✨ Features
+
+- **CMS-driven content** — Projects, skills, experience, education, and awards are all managed via Supabase; no code changes needed to update content.
+- **Admin panel** — A private `/admin` route for managing all portfolio data from a browser UI.
+- **Contact form** — Integrated with EmailJS to send emails directly from the browser.
+- **Smooth animations** — Powered by Framer Motion for polished micro-interactions.
+- **Dark mode UI** — Fully dark-themed design using DaisyUI + TailwindCSS.
+- **SEO ready** — Dynamic `<head>` metadata, Open Graph, Twitter Cards, sitemap, and robots.txt.
+- **Optimized images** — Next.js `<Image>` with support for multiple external domains and SVG.
+- **Production-ready** — Deployed on Vercel with Turbopack for fast local development.
+
+---
+
+## 🛠 Tech Stack
+
+| Category       | Technology                                                        |
+| -------------- | ----------------------------------------------------------------- |
+| Framework      | [Next.js 15](https://nextjs.org/) (App Router + Turbopack)       |
+| UI Library     | [React 19](https://react.dev/)                                    |
+| Styling        | [Tailwind CSS 3](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/) |
+| Animations     | [Framer Motion](https://www.framer.com/motion/)                   |
+| Icons          | [Lucide React](https://lucide.dev/) + [React Icons](https://react-icons.github.io/react-icons/) |
+| Database       | [Supabase](https://supabase.com/) (PostgreSQL)                    |
+| Email          | [EmailJS](https://www.emailjs.com/)                               |
+| Alerts/UI      | [SweetAlert2](https://sweetalert2.github.io/)                     |
+| Deployment     | [Vercel](https://vercel.com/)                                     |
+
+---
+
+## 📁 Project Structure
+
+```
+alif/
+├── public/                   # Static assets (images, icons)
+├── src/
+│   ├── app/
+│   │   ├── admin/            # Private admin panel
+│   │   ├── api/
+│   │   │   └── contact/      # Contact form API route
+│   │   ├── components/
+│   │   │   ├── Home/         # Home page sections
+│   │   │   ├── Journey/      # Experience & education timeline
+│   │   │   ├── Landing/      # Hero / landing section
+│   │   │   ├── Projects/     # Projects showcase
+│   │   │   ├── Services/     # Services section
+│   │   │   ├── Skills/       # Skills grid
+│   │   │   ├── contact/      # Contact section
+│   │   │   └── shared/       # Navbar, footer, layout chrome
+│   │   ├── projects/         # Dynamic project detail pages
+│   │   ├── globals.css       # Global styles
+│   │   ├── layout.js         # Root layout + metadata
+│   │   ├── page.js           # Home page
+│   │   ├── robots.js         # robots.txt generation
+│   │   └── sitemap.js        # Sitemap generation
+│   ├── component/            # Reusable UI components
+│   │   ├── About.jsx
+│   │   ├── Award.jsx
+│   │   ├── Education.jsx
+│   │   ├── ExperienceSummary.jsx
+│   │   ├── Experince.jsx
+│   │   └── ProjectCart.jsx
+│   ├── data/                 # Static/local data files
+│   ├── lib/
+│   │   ├── cms.js            # Supabase CMS data-fetching layer
+│   │   ├── emailjs.js        # EmailJS configuration
+│   │   └── supabase.js       # Supabase client setup
+│   ├── models/               # Mongoose models (if used)
+│   ├── pages/                # Next.js Pages Router (legacy/API)
+│   └── utils/                # Shared utility functions
+├── supabase/
+│   ├── portfolio_schema.sql  # Main portfolio schema
+│   ├── journey.sql           # Journey / timeline schema
+│   ├── schema.sql            # Full database schema
+│   └── storage.sql           # Storage bucket configuration
+├── .env                      # Local environment variables (not committed)
+├── .env.local                # Local overrides (not committed)
+├── next.config.mjs           # Next.js configuration
+├── tailwind.config.mjs       # Tailwind CSS configuration
+├── vercel.json               # Vercel deployment configuration
+└── package.json
 ```
 
-> Dev and prod builds share `.next` — stop `npm run dev` before `npm run build`.
+---
 
-## Environment variables (`.env.local`)
+## 🚀 Getting Started
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://cvmmpnpvstrwgfmhfplw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
-# Optional (contact-message MongoDB archive)
-MONGODB_URI=<connection string>
-```
+### Prerequisites
 
-## Supabase CMS setup (one time)
+- **Node.js** ≥ 18.x
+- **npm** ≥ 9.x
+- A [Supabase](https://supabase.com/) project
+- An [EmailJS](https://www.emailjs.com/) account (for the contact form)
 
-1. Open the Supabase **SQL Editor** and run the whole `supabase/schema.sql`
-   (drops old draft tables, creates the redesigned relational schema, enables
-   RLS, reseeds current site content).
-2. **Authentication → Users → Add user** — create the single admin account.
-3. **Authentication → Providers → Email → turn OFF “Allow new users to sign up”**
-   so nobody else can register.
+### Installation
 
-### Schema notes (`supabase/schema.sql`)
+1. **Clone the repository**
 
-- `alif_site_content` — JSONB page sections: `site`, `hero`, `about`,
-  `journey`, `awards`
-- `alif_projects` ↔ `alif_project_details.project_id`
-  `REFERENCES alif_projects(id) ON DELETE CASCADE` (deleting a project deletes
-  its case study)
-- `alif_skills` (+`group`), `alif_tools`, `alif_tag` (tech icons),
-  `alif_education`, `alif_experience` (absorbs the old `alif_workflow`),
-  `alif_services` (icon = lucide name), `alif_reviews`
-- RLS: **public read** on all tables; **write only when
-  `auth.jwt().email = 'alifbrur16@gmail.com'`** — enforced in the database,
-  so even a logged-in non-admin account cannot write
-- `updated_at` auto-touch trigger on every table
+   ```bash
+   git clone https://github.com/With-ALIF/alif-protfolio-0.2.git
+   cd alif-portfolio-0.2
+   ```
 
-### Regenerating the SQL from current code
+2. **Install dependencies**
 
-```bash
-node scripts/export-seeds.mjs   # rewrites supabase/schema.sql from src/data
-```
+   ```bash
+   npm install
+   ```
 
-## Admin panel (`/admin`)
+3. **Set up environment variables**
 
-- Reachable **only by direct URL** — there is no login link, button, or route
-  reference anywhere in the public site, sitemap, or nav (plus `noindex`).
-- Login is locked to the single admin email in both the app and RLS.
-- Tabbed CRUD for all 10 tables: text / textarea / number / checkbox /
-  dropdown / project-picker / validated JSON editors, with cascade-delete
-  warning on projects.
+   Copy the example below into a `.env.local` file at the project root and fill in your values:
 
-## Contact form
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-Sends mail from the browser via EmailJS (`src/lib/emailjs.js`), with inline
-validation, sending state, and success/error messages. A best-effort copy is
-archived with `POST /api/contact` (MongoDB when `MONGODB_URI` is set — a DB
-failure never fails the email).
+4. **Start the development server**
 
-## Project structure
+   ```bash
+   npm run dev
+   ```
 
-```text
-src/
-  app/
-    page.js                 # fetches CMS bundle (force-dynamic) → <Landing/>
-    layout.js               # fetches site profile/nav → Navbar + Footer
-    admin/                  # login gate + CMS dashboard (unlinked, noindex)
-    projects/[id]/          # case-study pages (server, CMS + fallback)
-    api/contact/            # best-effort message archive
-  lib/
-    cms.js                  # server CMS bundle + Supabase→component mappers
-    supabase.js             # browser client + single-admin sign-in
-    emailjs.js              # EmailJS config + browser send
-  data/                     # local fallbacks (also the seed source of truth)
-  component/  app/components/  # sections, cards, Navbar, Footer
-supabase/schema.sql         # full relational schema + RLS + seeds
-scripts/export-seeds.mjs    # regenerates schema.sql from src/data
-```
+   The app will be running at [http://localhost:3000](http://localhost:3000) with **Turbopack** for fast HMR.
 
-## Deployment (Vercel)
+---
 
-1. Import the repo, set the `.env.local` variables in project settings.
-2. `npm run build` must pass locally first.
-3. After deploy, content edits in `/admin` go live within ~60s (ISR revalidate).
+## 🔑 Environment Variables
+
+| Variable                        | Description                        | Required |
+| ------------------------------- | ---------------------------------- | -------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL          | ✅       |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase public anonymous key | ✅       |
+
+> **Warning:** Never commit your `.env` or `.env.local` files. Both are already listed in `.gitignore`.
+
+---
+
+## 🗄 Database
+
+All dynamic content is stored in **Supabase (PostgreSQL)**. The `src/lib/cms.js` file provides a clean data-fetching layer that queries Supabase to serve:
+
+- Profile & navigation data
+- Projects (with tech stack, links, descriptions)
+- Skills (categorized)
+- Work experience & education (timeline)
+- Awards & certifications
+- Services offered
+
+The schema files in the `/supabase` directory can be used to bootstrap the database from scratch.
+
+
+---
+
+## 📜 Scripts
+
+| Command         | Description                         |
+| --------------- | ----------------------------------- |
+| `npm run dev`   | Start the dev server with Turbopack |
+| `npm run build` | Build for production                |
+| `npm run start` | Start the production server         |
+| `npm run lint`  | Run ESLint                          |
+
+---
+
+## 📄 License
+
+This project is personal and not open-sourced under any public license. All content, designs, and code are the intellectual property of **Md Abdullah Al Khalid Alif**. You may not copy, distribute, or use this project without explicit permission.
+
+---
+
+<p align="center">
+  Built with ❤️ by <a href="https://alif.mnr.bd">Md Abdullah Al Khalid Alif</a>
+</p>

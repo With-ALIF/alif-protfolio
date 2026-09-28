@@ -65,30 +65,30 @@ export default function Home({ profile = siteProfile, hero = heroFallback }) {
             </a>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-nowrap gap-2 sm:gap-3">
             <a
               href={profile.socials.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 px-2 py-2 text-xs text-zinc-300 hover:bg-white/10 hover:text-white sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
             >
-              <Github className="h-4 w-4" />
+              <Github className="h-4 w-4 shrink-0" />
               GitHub
             </a>
             <a
               href={profile.socials.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 px-2 py-2 text-xs text-zinc-300 hover:bg-white/10 hover:text-white sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
             >
-              <Linkedin className="h-4 w-4" />
+              <Linkedin className="h-4 w-4 shrink-0" />
               LinkedIn
             </a>
             <a
               href={`mailto:${profile.email}`}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 px-2 py-2 text-xs text-zinc-300 hover:bg-white/10 hover:text-white sm:flex-none sm:gap-2 sm:px-4 sm:text-sm"
             >
-              <Mail className="h-4 w-4" />
+              <Mail className="h-4 w-4 shrink-0" />
               Email
             </a>
           </div>

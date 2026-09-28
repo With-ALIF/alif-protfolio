@@ -15,7 +15,7 @@ const Section = ({ icon: Icon, title, children }) => (
   </section>
 );
 
-const Paragraphs = ({ text, splitAll = false }) => {
+const Paragraphs = ({ text, splitAll = false, className = "" }) => {
   const parts = String(text || "")
     .split(splitAll ? /\n+/ : /\n{2,}/)
     .map((part) => part.trim())
@@ -24,7 +24,7 @@ const Paragraphs = ({ text, splitAll = false }) => {
   return (
     <>
       {parts.map((part, index) => (
-        <p key={part} className={`leading-7 ${index > 0 ? "mt-4" : ""}`}>
+        <p key={part} className={`leading-7 ${index > 0 ? "mt-4" : ""} ${className}`}>
           {part}
         </p>
       ))}
@@ -140,7 +140,7 @@ export default async function ProjectDetails({ params }) {
 
       {fullDescription && (
         <Section icon={LayoutDashboard} title="Overview">
-          <Paragraphs text={fullDescription} />
+          <Paragraphs text={fullDescription} className="text-justify" />
         </Section>
       )}
 
@@ -234,7 +234,7 @@ export default async function ProjectDetails({ params }) {
                   </span>
                   <div>
                     <h3 className="font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 leading-6 text-zinc-400">{item.detail}</p>
+                    <p className="mt-2 leading-6 text-zinc-400 [text-wrap:pretty]">{item.detail}</p>
                   </div>
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default async function ProjectDetails({ params }) {
       <div className="grid gap-6 lg:grid-cols-2">
         {challenges.length > 0 && (
           <Section icon={AlertTriangle} title="Challenges">
-            <ul className="list-disc space-y-2 pl-5">
+            <ul className="list-disc space-y-2 pl-5 text-justify">
               {challenges.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -255,7 +255,7 @@ export default async function ProjectDetails({ params }) {
         )}
         {solutions.length > 0 && (
           <Section icon={Lightbulb} title="Solutions">
-            <ul className="list-disc space-y-2 pl-5">
+            <ul className="list-disc space-y-2 pl-5 text-justify">
               {solutions.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -281,7 +281,7 @@ export default async function ProjectDetails({ params }) {
             <h2 className="text-2xl font-semibold">{databaseInfo.name}</h2>
           </div>
           <div className="mt-4 text-zinc-300">
-            <Paragraphs text={databaseInfo.description} splitAll />
+            <Paragraphs text={databaseInfo.description} splitAll className="text-justify" />
           </div>
         </section>
       )}

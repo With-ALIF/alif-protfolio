@@ -27,7 +27,7 @@ export const navItems = [
   { path: "#experience", title: "Experience" },
   { path: "#journey", title: "Journey" },
   { path: "#projects", title: "Projects" },
-  { path: "#services", title: "Services" },
   { path: "#achievements", title: "Achievements" },
+  { path: "#services", title: "Services" },
   { path: "#contact", title: "Contact" },
 ];

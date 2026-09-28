@@ -46,7 +46,7 @@ const AwardsSection = ({ items }) => {
       transition={{ duration: 1 }}
     >
       <div className="max-w-4xl mx-auto border border-white/10 bg-zinc-900/70 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Awards</h2>
+        <h2 className="text-4xl font-bold tracking-normal mb-6 text-center sm:text-5xl">Awards</h2>
 
         <div
           ref={scrollerRef}

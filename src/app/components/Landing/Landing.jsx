@@ -65,12 +65,12 @@ export default function Landing({ cms }) {
         <Projects items={d.projects} tagIcons={d.tagIcons} studies={d.studies} />
       </section>
 
-      <section id="services" className="scroll-mt-24">
-        <Services items={d.services} />
-      </section>
-
       <section id="achievements" className="scroll-mt-24">
         <AwardsSection items={d.awards} />
+      </section>
+
+      <section id="services" className="scroll-mt-24">
+        <Services items={d.services} />
       </section>
 
       <section id="contact" className="scroll-mt-24 space-y-10">

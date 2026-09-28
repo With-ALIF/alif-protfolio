@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Brush, Code, Monitor, Wrench } from "lucide-react";
+import { Brush, ChevronDown, Code, Monitor, Wrench } from "lucide-react";
 import { servicesData as localServices } from "@/data/services";
 
 const SERVICE_ICONS = {
@@ -12,15 +13,18 @@ const SERVICE_ICONS = {
 };
 
 export default function Services({ items }) {
+  const [openId, setOpenId] = useState(null);
   const visibleServices = [...(items ?? localServices)].sort(
     (a, b) => a.sortOrder - b.sortOrder
   );
 
+  const toggle = (id) => setOpenId((current) => (current === id ? null : id));
+
   return (
     <section className="space-y-10 text-white">
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-sm font-semibold uppercase text-blue-300">Services</p>
-        <h1 className="mt-3 text-4xl font-bold tracking-normal sm:text-5xl">How I can help</h1>
+        <p className="text-4xl font-bold tracking-normal text-blue-300 sm:text-5xl">Services</p>
+        <h1 className="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">How I can help</h1>
         <p className="mt-4 text-zinc-300">
           Practical development services for job-ready products, MVPs, portfolio-grade applications, and client websites.
         </p>
@@ -40,8 +44,24 @@ export default function Services({ items }) {
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/15 text-blue-200">
                 <Icon className="h-6 w-6" />
               </div>
-              <h2 className="mt-5 text-xl font-semibold">{service.title}</h2>
-              <p className="mt-3 leading-7 text-zinc-300">{service.desc}</p>
+              <h2 className="mt-5">
+                <button
+                  type="button"
+                  onClick={() => toggle(service.id)}
+                  aria-expanded={openId === service.id}
+                  className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+                >
+                  <span className="text-xl font-semibold">{service.title}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-blue-300 transition-transform duration-300 ${
+                      openId === service.id ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+              </h2>
+              {openId === service.id ? (
+                <p className="mt-3 leading-7 text-zinc-300">{service.desc}</p>
+              ) : null}
             </article>
           );
         })}

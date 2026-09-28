@@ -51,6 +51,8 @@ export default function AdminPanel({ user }) {
             onDelete={setPendingDelete}
             onNew={s.startNew}
             canDelete={canDelete}
+            showAdd={activeName !== "alif_project_details"}
+            showDelete={activeName !== "alif_project_details"}
           />
           <div className="rounded-lg border border-white/10 bg-zinc-900/60 p-4">
             <EditorPanel

@@ -36,7 +36,7 @@ const About = ({ paragraphs, image }) => {
           {list.map((paragraph, index) => (
             <p
               key={index}
-              className="mt-4 leading-7 text-zinc-300 [&_strong]:text-white"
+              className="mt-4 text-justify leading-7 text-zinc-300 [&_strong]:text-white"
               dangerouslySetInnerHTML={{ __html: paragraph }}
             />
           ))}

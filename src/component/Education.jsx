@@ -76,7 +76,7 @@ const EducationSection = ({ items }) => {
                     <Image src={edu.logo} alt={`${edu.institute} logo`} width={48} height={48} className="h-full w-full object-cover" />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-blue-200">{edu.institute}</p>
+                    <p className="text-sm font-medium leading-snug break-words text-blue-200">{edu.institute}</p>
                     <p className="text-xs text-zinc-500">{edu.district} · {edu.year}</p>
                   </div>
                 </div>

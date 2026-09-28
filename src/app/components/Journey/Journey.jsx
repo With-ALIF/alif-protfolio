@@ -29,8 +29,8 @@ export default function Journey({ items }) {
   return (
     <section className="space-y-10 text-white">
       <div className="mx-auto max-w-3xl text-center">
-        <p className="text-sm font-semibold uppercase text-blue-300">Career path</p>
-        <h2 className="mt-3 text-4xl font-bold tracking-normal">My Journey</h2>
+        <p className="text-4xl font-bold tracking-normal text-blue-300 sm:text-5xl">Career path</p>
+        <h2 className="mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-400">My Journey</h2>
         <div className="mt-4 flex items-center justify-center gap-1.5" aria-hidden="true">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />

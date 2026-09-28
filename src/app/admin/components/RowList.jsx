@@ -9,14 +9,16 @@ export function StatusBanner({ error, notice }) {
   );
 }
 
-export default function RowList({ table, rows, loading, editing, onEdit, onDelete, onNew, canDelete }) {
+export default function RowList({ table, rows, loading, editing, onEdit, onDelete, onNew, canDelete, showAdd = true, showDelete = true }) {
   return (
     <div className="rounded-lg border border-white/10 bg-zinc-900/60 p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-semibold">{table.label} ({rows.length})</h2>
-        <button onClick={onNew} className="rounded-full bg-blue-500 px-4 py-1.5 text-sm font-semibold hover:bg-blue-400">
-          + Add
-        </button>
+        {showAdd ? (
+          <button onClick={onNew} className="rounded-full bg-blue-500 px-4 py-1.5 text-sm font-semibold hover:bg-blue-400">
+            + Add
+          </button>
+        ) : null}
       </div>
       {loading ? (
         <p className="text-sm text-zinc-400">Loading…</p>
@@ -39,11 +41,11 @@ export default function RowList({ table, rows, loading, editing, onEdit, onDelet
                   hidden
                 </span>
               ) : null}
-              {canDelete && !canDelete(row) ? null : (
+              {showDelete && (!canDelete || canDelete(row)) ? (
                 <button onClick={() => onDelete(row)} className="shrink-0 rounded-full border border-red-400/30 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10">
                   Delete
                 </button>
-              )}
+              ) : null}
             </li>
           ))}
         </ul>

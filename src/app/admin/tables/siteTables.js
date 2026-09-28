@@ -19,7 +19,7 @@ export const siteTables = [
     listBy: (r) => `${r.sort_order ?? 0} · ${r.title}`,
     fields: [
       F("title", "Title"),
-      F("slug", "Slug"),
+      F("slug", "Slug", "text", { readOnly: true }),
       F("description", "Description", "textarea"),
       F("image", "Image URL + Upload", "image"),
       F("github", "GitHub URL"),
@@ -36,9 +36,9 @@ export const siteTables = [
     orderBy: "slug",
     listBy: (r) => r.slug || r.title,
     fields: [
-      F("project_id", "Project", "project"),
-      F("slug", "Slug"),
+      F("project_id", "Project", "hidden"),
       F("title", "Title"),
+      F("slug", "Slug", "text", { readOnly: true }),
       F("description", "Short description", "textarea"),
       F("full_description", "Full description", "textarea"),
       F("github_url", "GitHub URL"),

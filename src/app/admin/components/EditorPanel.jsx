@@ -7,7 +7,7 @@ export default function EditorPanel({ table, editing, isNew, form, saving, proje
   return (
     <div className="space-y-4">
       <h2 className="font-semibold">{isNew ? `New ${table.label.slice(0, -1) || "row"}` : "Edit"}</h2>
-      {table.fields.map((f) => (
+      {table.fields.filter((f) => f.type !== "hidden").map((f) => (
         <label key={f.key} className="block">
           <span className="text-sm font-medium text-zinc-300">{f.label}</span>
           <div>

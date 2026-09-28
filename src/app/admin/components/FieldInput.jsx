@@ -12,6 +12,7 @@ import GalleryEditor from "./GalleryEditor";
 import { StringListEditor, TimelineEditor, StatsEditor } from "./EntryEditors";
 
 export default function FieldInput({ field, value, section, projectOptions, onChange, onPickName, disabled }) {
+  if (field.type === "hidden") return null;
   if (field.type === "image") return <ImageInput value={value} onChange={onChange} />;
   if (field.type === "techselect") return <TechSelector value={value} onChange={onChange} />;
   if (field.type === "tagselect") return <TagSelector value={value} onChange={onChange} />;
@@ -81,6 +82,13 @@ export default function FieldInput({ field, value, section, projectOptions, onCh
       </select>
     );
   return (
-    <input type={field.type === "number" ? "number" : "text"} value={value ?? ""} onChange={(e) => onChange(e.target.value)} className={inputCls} />
+    <input
+      type={field.type === "number" ? "number" : "text"}
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      readOnly={field.readOnly}
+      title={field.readOnly ? "Auto-generated, not editable" : undefined}
+      className={`${inputCls} ${field.readOnly ? "cursor-not-allowed text-zinc-400" : ""}`}
+    />
   );
 }

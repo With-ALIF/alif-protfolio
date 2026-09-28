@@ -9,7 +9,6 @@ const ProjectCard = ({ project, techStack }) => {
   const study = getCaseStudy(project.id);
   const showGithub = Boolean(project.showGithub && project.github);
   const showDemo = Boolean(project.demo);
-  const features = study?.features?.slice(0, 3) ?? [];
   const stack = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];
 
   return (
@@ -41,17 +40,6 @@ const ProjectCard = ({ project, techStack }) => {
 
         <h2 className="mt-4 text-2xl font-semibold text-white">{project.title}</h2>
         <p className="mt-3 flex-1 text-sm leading-6 text-zinc-300">{project.description}</p>
-
-        {features.length > 0 && (
-          <ul className="mt-4 space-y-2 text-sm text-zinc-300">
-            {features.map((feature) => (
-              <li key={feature} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-300" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        )}
 
         {stack.length > 0 && (
           <div className="mt-4">
