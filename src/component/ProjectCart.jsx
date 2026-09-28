@@ -60,7 +60,7 @@ const ProjectCard = ({ project, techStack }) => {
               {stack.map((t) => (
                 <span
                   key={t.name}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-white/40 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-200"
+                  className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1 text-xs text-zinc-300"
                 >
                   {t.icon ? (
                     // eslint-disable-next-line @next/next/no-img-element

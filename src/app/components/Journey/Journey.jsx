@@ -9,7 +9,7 @@ const circleClass = (label) =>
 
 function MilestoneCard({ milestone }) {
   return (
-    <div className="w-full rounded-lg border border-white/10 bg-zinc-900/70 p-4">
+    <div className="h-full w-full rounded-lg border border-white/10 bg-zinc-900/70 p-4">
       <div className="space-y-3">
         {milestone.items.map((item) => (
           <div key={item.title}>
@@ -60,9 +60,9 @@ export default function Journey({ items }) {
             style={{ left: `${edge}%`, right: `${edge}%` }}
           />
           {list.map((milestone) => (
-            <div key={milestone.label} className="relative flex flex-1 flex-col items-center">
-              <div className={circleClass(milestone.label)}>{milestone.label}</div>
-              <div className="mt-4 w-full">
+            <div key={milestone.label} className="relative flex flex-1 flex-col items-stretch">
+              <div className="flex justify-center"><div className={circleClass(milestone.label)}>{milestone.label}</div></div>
+              <div className="mt-4 flex w-full flex-1">
                 <MilestoneCard milestone={milestone} />
               </div>
             </div>
