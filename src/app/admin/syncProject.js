@@ -1,4 +1,6 @@
 import { getSupabase } from "@/lib/supabase";
+import { loadProjectOptions, loadProjects } from "./store/projects";
+import { loadDetails, saveDetail } from "./store/details";
 
 // After a project is saved, mirror card fields into its details row
 // so the details page (/projects/[slug]) stays in sync automatically.
@@ -15,20 +17,39 @@ export async function saveProjectAndSync(s, activeName) {
     const sb = getSupabase();
     let pid = prevId;
     if (!pid && wasNew && snapshot.slug) {
-      const { data } = await sb.from("alif_projects").select("id").eq("slug", snapshot.slug).maybeSingle();
-      pid = data?.id;
+      const { data } = await loadProjectOptions(sb);
+      pid = (data || []).find((p) => p.slug === snapshot.slug)?.id;
     }
     if (!pid) return;
-    const { data: existing } = await sb.from("alif_project_details").select("id").eq("project_id", pid).maybeSingle();
-    if (!existing) return;
-    const { error } = await sb.from("alif_project_details").update({
+    const { data: details, error } = await loadDetails(sb, "slug");
+    if (error) throw error;
+    const match = (details || []).find((d) => d.project_id === pid);
+    const card = {
       title: snapshot.title || "",
       slug: snapshot.slug || "",
       description: snapshot.description || "",
       thumbnail_url: snapshot.image || "",
-      tags: Array.isArray(snapshot.tags) ? snapshot.tags : [],
-    }).eq("project_id", pid);
-    if (error) throw error;
+    };
+    if (Array.isArray(snapshot.tags)) card.tags = snapshot.tags;
+    if (!match) {
+      if (!card.slug) {
+        s.setNotice?.("Saved project. Add a slug, save again, and its Details row will be created.");
+        return;
+      }
+      const c = await saveDetail(sb, null, { ...card, project_id: pid });
+      if (c.error) throw c.error;
+      s.setNotice?.("Saved project + Details row created.");
+      return;
+    }
+    const r = await saveDetail(sb, match.id, {
+      ...match,
+      title: snapshot.title || "",
+      slug: snapshot.slug || "",
+      description: snapshot.description || "",
+      thumbnail_url: snapshot.image || "",
+      tags,
+    });
+    if (r.error) throw r.error;
     s.setNotice?.("Saved project + details synced.");
   } catch (e) {
     s.setNotice?.(`Saved project. Details sync failed: ${e.message}`);
@@ -40,24 +61,27 @@ export async function syncAllProjectsToDetails(s) {
   const sb = getSupabase();
   if (!sb) return;
   s.setNotice?.("Syncing all projects to details...");
-  const { data: projects } = await sb.from("alif_projects").select("id,slug,title,description,image,tags");
-  const { data: details } = await sb.from("alif_project_details").select("id,project_id");
-  if (!projects || !details) {
+  const { data: projects, error: e1 } = await loadProjects(sb, "sort_order");
+  const { data: details, error: e2 } = await loadDetails(sb, "slug");
+  if (e1 || e2 || !projects || !details) {
     s.setNotice?.("Sync failed: could not load data.");
     return;
   }
-  const detailIdByProject = new Map(details.map((d) => [d.project_id, d.id]));
+  const byProject = new Map(details.map((d) => [d.project_id, d.id]));
+  const rowById = new Map(details.map((d) => [d.id, d]));
   let n = 0;
   for (const p of projects || []) {
-    const did = detailIdByProject.get(p.id);
+    const did = byProject.get(p.id);
     if (!did) continue;
-    const { error } = await sb.from("alif_project_details").update({
+    const m = rowById.get(did);
+    const { error } = await saveDetail(sb, did, {
+      ...m,
       title: p.title || "",
       slug: p.slug || "",
       description: p.description || "",
       thumbnail_url: p.image || "",
-      tags: Array.isArray(p.tags) ? p.tags : [],
-    }).eq("id", did);
+      tags: p.tags || [],
+    });
     if (error) {
       s.setNotice?.(`Sync failed: ${error.message}`);
       return;

@@ -8,7 +8,7 @@ export const otherTables = [
     listBy: (r) => `${r.group || "Other"} · ${r.name}`,
     fields: [
       F("name", "Name"),
-      F("icon", "Icon URL + Upload", "image"),
+      F("icon", "Icon (from Icons table)", "iconselect"),
       F("group", "Group", "select", {
         options: ["Languages", "Frameworks", "Backend Services", "Tools", "Other"],
       }),
@@ -21,7 +21,7 @@ export const otherTables = [
     label: "Tools",
     orderBy: "sort_order",
     listBy: (r) => `${r.sort_order ?? 0} · ${r.name}`,
-    fields: [F("name", "Name"), F("icon", "Icon URL + Upload", "image"), F("sort_order", "Sort order", "number")],
+    fields: [F("name", "Name"), F("icon", "Icon (from Icons table)", "iconselect"), F("sort_order", "Sort order", "number")],
   },
   {
     name: "alif_tag",

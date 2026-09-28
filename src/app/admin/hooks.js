@@ -4,6 +4,7 @@ import { getSupabase } from "@/lib/supabase";
 import { blankFor, blankSiteData, normalizeSiteData, pretty } from "./format/data";
 import { buildPayload } from "./format/payload";
 import { SITE_SECTIONS } from "./tables";
+import { deleteRow, insertRow, loadProjectOptions, loadRows, updateRow } from "./store";
 export function useAdminTable(table, activeName) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,13 +24,13 @@ export function useAdminTable(table, activeName) {
     }
     setLoading(true);
     setError("");
-    const { data, error: err } = await sb.from(activeName).select("*").order(table.orderBy, { ascending: true });
+    const { data, error: err } = await loadRows(sb, activeName, table.orderBy);
     if (err) {
       setError(err.message);
       setRows([]);
     } else setRows(data || []);
     if (activeName === "alif_project_details") {
-      const { data: projs } = await sb.from("alif_projects").select("id,title,slug").order("sort_order");
+      const { data: projs } = await loadProjectOptions(sb);
       setProjectOptions(projs || []);
     }
     setLoading(false);
@@ -71,7 +72,7 @@ export function useAdminTable(table, activeName) {
     try {
       const sb = getSupabase();
       const payload = buildPayload(table, form);
-      const q = isNew ? await sb.from(activeName).insert(payload) : await sb.from(activeName).update(payload).eq("id", editing.id);
+      const q = isNew ? await insertRow(sb, activeName, payload) : await updateRow(sb, activeName, editing.id, payload);
       if (q.error) throw q.error;
       setNotice(isNew ? "Added." : "Saved.");
       setEditing(null);
@@ -85,7 +86,7 @@ export function useAdminTable(table, activeName) {
   const handleDelete = async (row) => {
     resetMsg();
     const sb = getSupabase();
-    const { error: err } = await sb.from(activeName).delete().eq("id", row.id);
+    const { error: err } = await deleteRow(sb, activeName, row);
     if (err) {
       setError(err.message);
       return;

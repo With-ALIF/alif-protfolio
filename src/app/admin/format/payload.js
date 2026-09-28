@@ -8,6 +8,7 @@ export const buildPayload = (table, form) => {
     if (f.type === "bool") payload[f.key] = !!raw;
     else if (f.type === "number") payload[f.key] = raw === "" ? 0 : Number(raw);
     else if (f.type === "lines") payload[f.key] = fromLines(raw);
+    else if (f.type === "tagselect") payload[f.key] = Array.isArray(raw) ? raw.map((t) => String(t)) : [];
     else if (f.type === "techlines") payload[f.key] = textToTech(raw);
     else if (f.type === "techselect")
       payload[f.key] = Array.isArray(raw) ? raw.map((t) => ({ name: t?.name || "", icon: t?.icon || "" })) : [];

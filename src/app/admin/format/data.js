@@ -30,6 +30,7 @@ export const normalizeSiteData = (section, raw) => {
 
 export const pretty = (field, value) => {
   if (field.type === "bool") return !!value;
+  if (field.type === "tagselect") return Array.isArray(value) ? value : [];
   if (value === null || value === undefined)
     return field.type === "dbinfo" ? { name: "", icon: "", description: "" } : field.type === "sitecontent" ? {} : "";
   if (field.type === "lines") return Array.isArray(value) ? value.join("\n") : typeof value === "string" ? value : "";
@@ -55,6 +56,7 @@ export const blankFor = (table) => {
   const obj = {};
   for (const f of table.fields) {
     if (f.type === "bool") obj[f.key] = f.key === "is_published" || f.key.startsWith("show_");
+    else if (f.type === "tagselect") obj[f.key] = [];
     else if (f.type === "number") obj[f.key] = 0;
     else if (f.type === "select") obj[f.key] = f.options?.[0] ?? "";
     else if (f.key === "section") obj[f.key] = SITE_SECTIONS[0];

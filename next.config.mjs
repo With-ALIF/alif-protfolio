@@ -23,6 +23,7 @@ const nextConfig = {
       "static.vecteezy.com",
       "www.designyourway.net",
       "thumb.wikimedia.org",
+      "upload.wikimedia.org",
       "static.thenounproject.com",
     ],
     dangerouslyAllowSVG: true,

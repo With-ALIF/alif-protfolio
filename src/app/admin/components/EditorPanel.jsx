@@ -11,7 +11,7 @@ export default function EditorPanel({ table, editing, isNew, form, saving, proje
         <label key={f.key} className="block">
           <span className="text-sm font-medium text-zinc-300">{f.label}</span>
           <div>
-            <FieldInput field={f} value={form[f.key]} section={form.section} projectOptions={projectOptions} onChange={(v) => onField(f.key, v)} disabled={!isNew && f.key === "section"} />
+            <FieldInput field={f} value={form[f.key]} section={form.section} projectOptions={projectOptions} onChange={(v) => onField(f.key, v)} onPickName={(name) => onField("name", name)} disabled={!isNew && f.key === "section"} />
           </div>
         </label>
       ))}

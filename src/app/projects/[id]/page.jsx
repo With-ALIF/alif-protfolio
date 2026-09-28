@@ -58,7 +58,6 @@ export default async function ProjectDetails({ params }) {
   const description = study?.description || project?.description;
   const fullDescription = study?.full_description || "";
   const thumbnail = study?.thumbnail_url || project?.image;
-  const tags = study?.tags || project?.tags || [];
   const status = study?.status || (project?.isPublished ? "Published" : "Draft");
   const technologies = study?.technologies || [];
   const features = study?.features || [];
@@ -94,16 +93,6 @@ export default async function ProjectDetails({ params }) {
 
       <header className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
         <div>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
           <h1 className="mt-4 text-4xl font-bold tracking-normal sm:text-5xl">{title}</h1>
           <p className="mt-5 text-lg leading-8 text-zinc-300">{description}</p>
           {links.length > 0 && (
@@ -140,7 +129,7 @@ export default async function ProjectDetails({ params }) {
         <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
           <p className="text-sm text-zinc-400">Technologies</p>
           <p className="mt-1 font-semibold">
-            {technologies.length > 0 ? technologies.length : tags.length}
+            {technologies.length}
           </p>
         </div>
         <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">

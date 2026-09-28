@@ -4,15 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Github, Globe } from "lucide-react";
 import { getCaseStudy } from "@/data/projects";
-import { getSkillIcon } from "@/data/skillIcons";
 
-const normKey = (name) => String(name).toLowerCase().replace(/[^a-z0-9]/g, "");
-
-const ProjectCard = ({ project, tagIcons }) => {
+const ProjectCard = ({ project, techStack }) => {
   const study = getCaseStudy(project.id);
   const showGithub = Boolean(project.showGithub && project.github);
   const showDemo = Boolean(project.demo);
   const features = study?.features?.slice(0, 3) ?? [];
+  const stack = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-zinc-900/80 transition hover:-translate-y-1 hover:border-blue-400/40">
@@ -27,16 +25,8 @@ const ProjectCard = ({ project, tagIcons }) => {
       </Link>
 
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          {project.tags.slice(0, 2).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200"
-            >
-              {tag}
-            </span>
-          ))}
-          {study?.status && (
+        {study?.status && (
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`rounded-full px-3 py-1 text-xs ${
                 String(study.status).toLowerCase().includes("complet")
@@ -46,8 +36,8 @@ const ProjectCard = ({ project, tagIcons }) => {
             >
               {study.status}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         <h2 className="mt-4 text-2xl font-semibold text-white">{project.title}</h2>
         <p className="mt-3 flex-1 text-sm leading-6 text-zinc-300">{project.description}</p>
@@ -63,28 +53,25 @@ const ProjectCard = ({ project, tagIcons }) => {
           </ul>
         )}
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          {project.tags.map((tag) => {
-            const icon = tagIcons?.[normKey(tag)] || getSkillIcon(tag);
-            return (
-              <span
-                key={`${project.id}-${tag}`}
-                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1 text-xs text-zinc-300"
-              >
-                {icon ? (
-                  <Image
-                    src={icon}
-                    alt={`${tag} logo`}
-                    width={14}
-                    height={14}
-                    className="h-3.5 w-3.5 object-contain"
-                  />
-                ) : null}
-                {tag}
-              </span>
-            );
-          })}
-        </div>
+        {stack.length > 0 && (
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Tech Stack</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {stack.map((t) => (
+                <span
+                  key={t.name}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-white/40 bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-200"
+                >
+                  {t.icon ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={t.icon} alt="" className="h-3.5 w-3.5 object-contain" />
+                  ) : null}
+                  {t.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-5 grid grid-cols-2 gap-2">
           {showDemo ? (

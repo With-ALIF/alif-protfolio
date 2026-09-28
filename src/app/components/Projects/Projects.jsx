@@ -4,7 +4,7 @@ import ProjectCard from "@/component/ProjectCart";
 import { projects } from "@/data/projects";
 import { motion } from "framer-motion";
 
-export default function Projects({ items, tagIcons }) {
+export default function Projects({ items, tagIcons, studies }) {
   const list = items ?? projects;
   return (
     <section className="space-y-10 text-white">
@@ -37,7 +37,7 @@ export default function Projects({ items, tagIcons }) {
       >
         {list.map((project) => (
           <motion.div key={project.id} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-            <ProjectCard project={project} tagIcons={tagIcons} />
+            <ProjectCard project={project} tagIcons={tagIcons} techStack={studies?.[project.id]?.technologies} />
           </motion.div>
         ))}
       </motion.div>

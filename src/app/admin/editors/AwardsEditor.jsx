@@ -30,7 +30,7 @@ export default function AwardsEditor({ data, onChange }) {
           <label className="block"><span className="text-xs text-zinc-400">Title</span><input value={it.title || ""} onChange={(e) => updateItem(idx, { title: e.target.value })} className={inputCls} /></label>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <label className="block"><span className="text-xs text-zinc-400">Issuer</span><input value={it.issuer || ""} onChange={(e) => updateItem(idx, { issuer: e.target.value })} className={inputCls} /></label>
-            <label className="block"><span className="text-xs text-zinc-400">Date</span><input value={it.date || ""} onChange={(e) => updateItem(idx, { date: e.target.value })} className={inputCls} placeholder="2026-08-25" /></label>
+            <label className="block"><span className="text-xs text-zinc-400">Date</span><input type="date" value={it.date || ""} onChange={(e) => updateItem(idx, { date: e.target.value })} className={`${inputCls} [color-scheme:dark]`} /></label>
           </div>
           <label className="block"><span className="text-xs text-zinc-400">Image URL + Upload</span><ImageInput value={it.image || ""} onChange={(url) => updateItem(idx, { image: url })} /></label>
           <label className="block"><span className="text-xs text-zinc-400">Description</span><textarea value={it.description || ""} onChange={(e) => updateItem(idx, { description: e.target.value })} rows={3} className={inputCls} /></label>

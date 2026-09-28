@@ -15,7 +15,7 @@ export default function TechSelector({ value, onChange }) {
     (async () => {
       const sb = getSupabase();
       if (!sb) return;
-      const { data } = await sb.from("alif_tag").select("name,icon").order("sort_order");
+      const { data } = await sb.from("portfolio_tags").select("name,icon").order("sort_order");
       if (data) setTags(data);
     })();
   }, []);

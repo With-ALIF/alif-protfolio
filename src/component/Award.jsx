@@ -68,13 +68,15 @@ const AwardsSection = ({ items }) => {
                 rel="noopener noreferrer"
                 className="block"
               >
-                <Image
-                  src={award.image}
-                  alt={`${award.title} certificate`}
-                  width={640}
-                  height={400}
-                  className="h-auto w-full rounded border border-white/10"
-                />
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded border border-white/10 bg-black/40">
+                  <Image
+                    src={award.image}
+                    alt={`${award.title} certificate`}
+                    fill
+                    sizes="(max-width: 768px) 85vw, 400px"
+                    className="object-contain"
+                  />
+                </div>
               </a>
 
               <h3 className="mt-4 text-xl font-bold">{award.title}</h3>

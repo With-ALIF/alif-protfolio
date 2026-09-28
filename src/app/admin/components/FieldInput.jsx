@@ -5,12 +5,18 @@ import { boxCls, hintCls, inputCls } from "../format/ui";
 import SiteContentEditor from "../editors/SiteContentEditor";
 import ImageInput from "./ImageInput";
 import TechSelector from "./TechSelector";
+import TagSelector from "./TagSelector";
+import DbSelector from "./DbSelector";
+import IconSelector from "./IconSelector";
 import GalleryEditor from "./GalleryEditor";
 import { StringListEditor, TimelineEditor, StatsEditor } from "./EntryEditors";
 
-export default function FieldInput({ field, value, section, projectOptions, onChange, disabled }) {
+export default function FieldInput({ field, value, section, projectOptions, onChange, onPickName, disabled }) {
   if (field.type === "image") return <ImageInput value={value} onChange={onChange} />;
   if (field.type === "techselect") return <TechSelector value={value} onChange={onChange} />;
+  if (field.type === "tagselect") return <TagSelector value={value} onChange={onChange} />;
+  if (field.type === "iconselect")
+    return <IconSelector value={value} onPick={(url, name) => { onChange(url); if (name) onPickName?.(name); }} />;
   if (field.type === "galleryedit") return <GalleryEditor value={value} onChange={onChange} />;
   if (field.type === "timelineedit") return <TimelineEditor value={value} onChange={onChange} />;
   if (field.type === "listedit") return <StringListEditor value={value} onChange={onChange} />;
@@ -46,11 +52,12 @@ export default function FieldInput({ field, value, section, projectOptions, onCh
     );
   if (field.type === "dbinfo") {
     const v = value || {};
+    const setDb = (patch) => onChange({ name: v.name || "", icon: v.icon || "", description: v.description || "", ...patch });
     return (
       <div className={boxCls}>
-        <label className="block"><span className="text-xs text-zinc-400">Name</span><input value={v.name || ""} onChange={(e) => onChange({ ...v, name: e.target.value })} className={inputCls} /></label>
-        <label className="block"><span className="text-xs text-zinc-400">Icon URL + Upload</span><ImageInput value={v.icon || ""} onChange={(url) => onChange({ ...v, icon: url })} /></label>
-        <label className="block"><span className="text-xs text-zinc-400">Description</span><textarea value={v.description || ""} onChange={(e) => onChange({ ...v, description: e.target.value })} rows={3} className={inputCls} /></label>
+        <label className="block"><span className="text-xs text-zinc-400">Name (from Backend Services)</span><DbSelector value={v.name || ""} onPick={(name, icon) => setDb({ name, icon })} /></label>
+        <label className="block"><span className="text-xs text-zinc-400">Icon URL + Upload</span><ImageInput value={v.icon || ""} onChange={(url) => setDb({ icon: url })} /></label>
+        <label className="block"><span className="text-xs text-zinc-400">Description</span><textarea value={v.description || ""} onChange={(e) => setDb({ description: e.target.value })} rows={3} className={inputCls} /></label>
       </div>
     );
   }

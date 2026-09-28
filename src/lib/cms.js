@@ -40,26 +40,9 @@ async function fetchTable(name, orderBy = "sort_order") {
   }
 }
 
-async function fetchSection(name) {
-  try {
-    const sb = serverClient();
-    if (!sb) return null;
-    const { data, error } = await sb
-      .from("alif_site_content")
-      .select("data")
-      .eq("section", name)
-      .eq("is_published", true)
-      .maybeSingle();
-    if (error || !data?.data) return null;
-    return data.data;
-  } catch {
-    return null;
-  }
-}
-
 const bySort = (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
 
-function mapProject(row) {
+function mapProject(row, tags = []) {
   return {
     id: row.slug,
     uuid: row.id,
@@ -69,7 +52,7 @@ function mapProject(row) {
     image: row.image ?? "",
     github: row.github ?? "",
     demo: row.demo ?? "",
-    tags: Array.isArray(row.tags) ? row.tags : [],
+    tags: Array.isArray(tags) ? tags : [],
     featured: !!row.featured,
     sortOrder: row.sort_order ?? 0,
     isPublished: row.is_published !== false,
@@ -79,61 +62,105 @@ function mapProject(row) {
 
 export async function getCmsBundle() {
   let [
-    siteSection,
-    heroSection,
-    aboutSection,
-    journeySection,
-    awardsSection,
+    profileRows,
+    socialRows,
+    navRows,
+    heroRows,
+    highlightRows,
+    paraRows,
+    journeyRows,
+    awardRows,
     projectRows,
+    projectTagRows,
+    tagRows,
     detailRows,
+    techRows,
+    featRows,
+    galRows,
+    timeRows,
+    chalRows,
+    soluRows,
+    statRows,
+    dbRows,
     skillRows,
     toolRows,
-    tagRows,
     educationRows,
     experienceRows,
     serviceRows,
-    journeyRows,
   ] = await Promise.all([
-    fetchSection("site"),
-    fetchSection("hero"),
-    fetchSection("about"),
-    fetchSection("journey"),
-    fetchSection("awards"),
-    fetchTable("alif_projects"),
-    fetchTable("alif_project_details", "slug"),
-    fetchTable("alif_skills"),
-    fetchTable("alif_tools"),
-    fetchTable("alif_tag"),
-    fetchTable("alif_education"),
-    fetchTable("alif_experience"),
-    fetchTable("alif_services"),
-    fetchTable("alif_journey"),
+    fetchTable("portfolio_profiles", "created_at"),
+    fetchTable("portfolio_socials", "created_at"),
+    fetchTable("portfolio_nav_items"),
+    fetchTable("portfolio_hero", "created_at"),
+    fetchTable("portfolio_hero_highlights"),
+    fetchTable("portfolio_about_paragraphs"),
+    fetchTable("portfolio_journey"),
+    fetchTable("portfolio_awards"),
+    fetchTable("portfolio_projects"),
+    fetchTable("portfolio_project_tags", "created_at"),
+    fetchTable("portfolio_tags"),
+    fetchTable("portfolio_project_details", "created_at"),
+    fetchTable("portfolio_detail_technologies"),
+    fetchTable("portfolio_detail_features"),
+    fetchTable("portfolio_detail_gallery"),
+    fetchTable("portfolio_detail_timeline"),
+    fetchTable("portfolio_detail_challenges"),
+    fetchTable("portfolio_detail_solutions"),
+    fetchTable("portfolio_detail_statistics"),
+    fetchTable("portfolio_detail_database", "created_at"),
+    fetchTable("portfolio_skills"),
+    fetchTable("portfolio_tools"),
+    fetchTable("portfolio_education"),
+    fetchTable("portfolio_experience"),
+    fetchTable("portfolio_services"),
   ]);
 
   // --- site / hero / about ---
   // Old seeds lack the "group" column → ignore them and use local groups.
   if (skillRows && !skillRows.some((r) => r.group)) skillRows = null;
+  const profRow = profileRows?.[0];
+  const socials = {};
+  for (const s of socialRows || []) {
+    if (s.platform) socials[s.platform] = s.url || "";
+  }
   const site = {
-    profile: siteSection?.profile ?? localProfile,
-    nav: Array.isArray(siteSection?.nav) && siteSection.nav.length > 0 ? siteSection.nav : localNav,
+    profile: profRow
+      ? {
+          name: profRow.name ?? "",
+          handle: profRow.handle ?? "",
+          role: profRow.role ?? "",
+          headline: profRow.headline ?? "",
+          value: profRow.value ?? "",
+          email: profRow.email ?? "",
+          location: profRow.location ?? "",
+          resumeUrl: profRow.resume_url ?? "",
+          profileImage: profRow.profile_image ?? "",
+          socials: { ...localProfile.socials, ...socials },
+        }
+      : localProfile,
+    nav:
+      Array.isArray(navRows) && navRows.length > 0
+        ? navRows.map((r) => ({ path: r.path || "#", title: r.title || "" }))
+        : localNav,
   };
+  const heroRow = heroRows?.[0];
   const hero = {
-    headline: heroSection?.headline ?? heroFallback.headline,
-    value: heroSection?.value ?? heroFallback.value,
+    headline: heroRow?.headline ?? heroFallback.headline,
+    value: heroRow?.value ?? heroFallback.value,
     highlights:
-      Array.isArray(heroSection?.highlights) && heroSection.highlights.length > 0
-        ? heroSection.highlights
+      Array.isArray(highlightRows) && highlightRows.length > 0
+        ? highlightRows.map((r) => ({ value: r.value ?? "", label: r.label ?? "" }))
         : heroFallback.highlights,
   };
   const about = {
     paragraphs:
-      Array.isArray(aboutSection?.paragraphs) && aboutSection.paragraphs.length > 0
-        ? aboutSection.paragraphs
+      Array.isArray(paraRows) && paraRows.length > 0
+        ? paraRows.map((r) => r.body ?? "")
         : aboutParagraphs,
   };
 
   // --- journey / awards ---
-  // Priority: alif_journey table → site_content section → local fallback.
+  // Priority: portfolio_journey table → local fallback.
   const journey = {
     items: (() => {
       if (journeyRows) {
@@ -146,27 +173,102 @@ export async function getCmsBundle() {
         const items = [...grouped.entries()].map(([label, items]) => ({ label, items }));
         if (items.length > 0) return items;
       }
-      if (Array.isArray(journeySection?.items) && journeySection.items.length > 0) return journeySection.items;
       return journeyMilestones;
     })(),
   };
   const awardsList = (() => {
-    const items = Array.isArray(awardsSection?.items) ? awardsSection.items : localAwards;
+    const items = awardRows
+      ? awardRows.map((r) => ({
+          id: r.id,
+          title: r.title,
+          issuer: r.issuer ?? "",
+          image: r.image ?? "",
+          description: r.description ?? "",
+          date: r.date ?? "",
+          sortOrder: r.sort_order ?? 0,
+          isPublished: r.is_published !== false,
+        }))
+      : localAwards;
     return items.filter((a) => a.isPublished !== false).sort(bySort);
   })();
 
   // --- projects + details ---
-  const projects = (projectRows ? projectRows.map(mapProject) : localProjects)
+  // Tags resolve via portfolio_project_tags → portfolio_tags (ordered by tag sort_order).
+  const tagById = {};
+  for (const t of tagRows || []) tagById[t.id] = t;
+  const tagsByProject = {};
+  for (const link of projectTagRows || []) {
+    const t = tagById[link.tag_id];
+    if (!t) continue;
+    if (!tagsByProject[link.project_id]) tagsByProject[link.project_id] = [];
+    tagsByProject[link.project_id].push({ name: t.name, order: t.sort_order ?? 0 });
+  }
+  for (const pid of Object.keys(tagsByProject)) {
+    tagsByProject[pid].sort((a, b) => a.order - b.order);
+  }
+  const projectTags = (pid) => (tagsByProject[pid] || []).map((t) => t.name);
+
+  const projects = (projectRows ? projectRows.map((r) => mapProject(r, projectTags(r.id))) : localProjects)
     .filter((p) => p.isPublished !== false)
     .sort(bySort);
+
+  // Group detail child rows by detail_id.
+  const groupChildren = (rows) => {
+    const m = {};
+    for (const r of rows || []) {
+      if (!m[r.detail_id]) m[r.detail_id] = [];
+      m[r.detail_id].push(r);
+    }
+    return m;
+  };
+  const techByDetail = groupChildren(techRows);
+  const featByDetail = groupChildren(featRows);
+  const galByDetail = groupChildren(galRows);
+  const timeByDetail = groupChildren(timeRows);
+  const chalByDetail = groupChildren(chalRows);
+  const soluByDetail = groupChildren(soluRows);
+  const statByDetail = groupChildren(statRows);
+  const dbByDetail = {};
+  for (const r of dbRows || []) dbByDetail[r.detail_id] = r;
+
+  const slugByProjectId = {};
+  for (const r of projectRows || []) slugByProjectId[r.id] = r.slug;
   const studies = {};
   if (detailRows) {
     // Primary link: project_id → project slug. Fallback: row slug.
-    const slugById = {};
-    for (const r of projectRows || []) slugById[r.id] = r.slug;
     for (const row of detailRows) {
-      const key = (row.project_id && slugById[row.project_id]) || row.slug;
-      if (key) studies[key] = row;
+      const key = (row.project_id && slugByProjectId[row.project_id]) || row.slug;
+      if (!key) continue;
+      const stats = {};
+      for (const s of statByDetail[row.id] || []) {
+        if (s.label) stats[s.label] = s.value ?? "";
+      }
+      const db = dbByDetail[row.id];
+      studies[key] = {
+        id: row.id,
+        project_id: row.project_id,
+        slug: key,
+        title: row.title ?? "",
+        description: row.description ?? "",
+        full_description: row.full_description ?? "",
+        github_url: row.github_url ?? "",
+        demo_url: row.demo_url ?? "",
+        thumbnail_url: row.thumbnail_url ?? "",
+        status: row.status ?? "Planned",
+        featured: !!row.featured,
+        tags: projectTags(row.project_id),
+        technologies: (techByDetail[row.id] || []).map((t) => ({ name: t.name ?? "", icon: t.icon ?? "" })),
+        features: (featByDetail[row.id] || []).map((t) => t.body ?? ""),
+        gallery: (galByDetail[row.id] || []).map((t) => ({ title: t.title ?? "", image: t.image_url ?? "" })),
+        timeline: (timeByDetail[row.id] || []).map((t) => ({ date: t.date ?? "", title: t.title ?? "", detail: t.detail ?? "" })),
+        challenges: (chalByDetail[row.id] || []).map((t) => t.body ?? ""),
+        solutions: (soluByDetail[row.id] || []).map((t) => t.body ?? ""),
+        statistics: stats,
+        database_info: db ? { name: db.name ?? "", icon: db.icon ?? "", description: db.description ?? "" } : {},
+        show_database: !!row.show_database,
+        show_github: row.show_github !== false,
+        show_demo: row.show_demo !== false,
+      };
     }
   } else {
     for (const s of localStudies) studies[s.id] = s;
