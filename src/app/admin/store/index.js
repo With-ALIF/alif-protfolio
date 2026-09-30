@@ -57,11 +57,12 @@ export async function deleteRow(sb, name, row) {
 }
 
 // Tables that keep their own copy of a tag icon URL.
-const ICON_REF_TABLES = [
-  "portfolio_skills",
-  "portfolio_tools",
-  "portfolio_detail_technologies",
-  "portfolio_detail_database",
+// NOTE: portfolio_detail_database has no `id` column (keyed by detail_id).
+const ICON_REFS = [
+  { table: "portfolio_skills", key: "id" },
+  { table: "portfolio_tools", key: "id" },
+  { table: "portfolio_detail_technologies", key: "id" },
+  { table: "portfolio_detail_database", key: "detail_id" },
 ];
 
 // Push a changed Icons-table URL into every copy. Returns updated row count.
@@ -70,8 +71,8 @@ export async function cascadeIconUrl(sb, oldUrl, newUrl) {
   const to = String(newUrl || "").trim();
   if (!from || !to || from === to) return { updated: 0, error: null };
   let updated = 0;
-  for (const t of ICON_REF_TABLES) {
-    const r = await sb.from(t).update({ icon: to }).eq("icon", from).select("id");
+  for (const { table, key } of ICON_REFS) {
+    const r = await sb.from(table).update({ icon: to }).eq("icon", from).select(key);
     if (r.error) return { updated, error: r.error };
     updated += (r.data || []).length;
   }

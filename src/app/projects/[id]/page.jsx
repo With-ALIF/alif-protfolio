@@ -181,11 +181,13 @@ export default async function ProjectDetails({ params }) {
                 className="group/tech inline-flex min-w-0 items-center justify-center gap-2.5 rounded-lg border border-blue-400/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-100 transition duration-200 hover:-translate-y-0.5 hover:border-blue-400/40 hover:bg-blue-500/20 hover:shadow-lg hover:shadow-blue-950/40"
               >
                 {tech.icon ? (
-                  <Image
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
                     src={tech.icon}
                     alt=""
                     width={22}
                     height={22}
+                    loading="lazy"
                     className="h-6 w-6 shrink-0 object-contain transition duration-200 group-hover/tech:scale-110"
                   />
                 ) : null}
