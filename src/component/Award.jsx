@@ -62,22 +62,24 @@ const AwardsSection = ({ items }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
             >
-              <a
-                href={award.image}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded border border-white/10 bg-black/40">
-                  <Image
-                    src={award.image}
-                    alt={`${award.title} certificate`}
-                    fill
-                    sizes="(max-width: 768px) 85vw, 400px"
-                    className="object-contain"
-                  />
-                </div>
-              </a>
+              {award.image ? (
+                <a
+                  href={award.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded border border-white/10 bg-black/40">
+                    <Image
+                      src={award.image}
+                      alt={`${award.title} certificate`}
+                      fill
+                      sizes="(max-width: 768px) 85vw, 400px"
+                      className="object-contain"
+                    />
+                  </div>
+                </a>
+              ) : null}
 
               <h3 className="mt-4 text-xl font-bold">{award.title}</h3>
               <p className="text-sm text-blue-400">By {award.issuer}</p>

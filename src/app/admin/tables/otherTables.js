@@ -9,6 +9,7 @@ export const otherTables = [
     fields: [
       F("name", "Name"),
       F("icon", "Icon (from Icons table)", "iconselect"),
+      F("tag_id", "Tag link", "tagref"),
       F("group", "Group", "select", {
         options: ["Languages", "Frameworks", "Backend Services", "Tools", "Other"],
       }),
@@ -21,13 +22,15 @@ export const otherTables = [
     label: "Tools",
     orderBy: "sort_order",
     listBy: (r) => `${r.sort_order ?? 0} · ${r.name}`,
-    fields: [F("name", "Name"), F("icon", "Icon (from Icons table)", "iconselect"), F("sort_order", "Sort order", "number")],
+    fields: [F("name", "Name"), F("icon", "Icon (from Icons table)", "iconselect"), F("tag_id", "Tag link", "tagref"), F("sort_order", "Sort order", "number")],
   },
   {
     name: "alif_tag",
     label: "Icons",
     orderBy: "sort_order",
     listBy: (r) => r.name,
+    searchable: true,
+    thumb: (r) => r.icon,
     fields: [F("name", "Name"), F("icon", "Icon URL + Upload", "image"), F("sort_order", "Sort order", "number")],
   },
   {

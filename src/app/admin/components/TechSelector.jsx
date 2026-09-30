@@ -15,7 +15,7 @@ export default function TechSelector({ value, onChange }) {
     (async () => {
       const sb = getSupabase();
       if (!sb) return;
-      const { data } = await sb.from("portfolio_tags").select("name,icon").order("sort_order");
+      const { data } = await sb.from("portfolio_tags").select("id,name,icon").order("sort_order");
       if (data) setTags(data);
     })();
   }, []);
@@ -23,7 +23,7 @@ export default function TechSelector({ value, onChange }) {
   const addPicked = () => {
     const found = tags.find((t) => t.name === pick);
     if (!found) return;
-    onChange([...selected, { name: found.name, icon: found.icon || "" }]);
+    onChange([...selected, { name: found.name, icon: found.icon || "", tag_id: found.id || null }]);
     setPick("");
   };
 

@@ -24,10 +24,13 @@ export async function saveProjectAndSync(s, activeName) {
     const { data: details, error } = await loadDetails(sb, "slug");
     if (error) throw error;
     const match = (details || []).find((d) => d.project_id === pid);
+    // Details' Short description is read-only in the admin, so it is always
+    // (re)synced from the project: short_description if set, else description.
+    const shortDescription = snapshot.short_description || snapshot.description || "";
     const card = {
       title: snapshot.title || "",
       slug: snapshot.slug || "",
-      description: snapshot.description || "",
+      description: shortDescription,
       thumbnail_url: snapshot.image || "",
     };
     if (Array.isArray(snapshot.tags)) card.tags = snapshot.tags;
@@ -45,9 +48,9 @@ export async function saveProjectAndSync(s, activeName) {
       ...match,
       title: snapshot.title || "",
       slug: snapshot.slug || "",
-      description: snapshot.description || "",
+      description: shortDescription,
       thumbnail_url: snapshot.image || "",
-      tags,
+      tags: snapshot.tags,
     });
     if (r.error) throw r.error;
     s.setNotice?.("Saved project + details synced.");
@@ -78,7 +81,7 @@ export async function syncAllProjectsToDetails(s) {
       ...m,
       title: p.title || "",
       slug: p.slug || "",
-      description: p.description || "",
+      description: p.short_description || p.description || "",
       thumbnail_url: p.image || "",
       tags: p.tags || [],
     });

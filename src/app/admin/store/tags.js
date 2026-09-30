@@ -34,3 +34,20 @@ export async function tagsByProject(sb) {
   for (const l of b.data || []) (map[l.project_id] = map[l.project_id] || []).push(nameById[l.tag_id] || "");
   return { map, error: null };
 }
+
+// Probes (once per table per session) whether the tag_id FK column exists.
+// Lets the admin keep working before the migration below has been applied:
+//   alter table X add column tag_id uuid references portfolio_tags(id) on delete set null;
+const tagIdSupport = {};
+export async function supportsTagId(sb, table) {
+  if (tagIdSupport[table] !== undefined) return tagIdSupport[table];
+  try {
+    const r = await sb.from(table).select("tag_id").limit(1);
+    // Only a missing-column error means "migration not applied yet".
+    // Any other error (network, RLS) must NOT be masked: assume supported.
+    tagIdSupport[table] = !r.error || !String(r.error.message || "").includes("tag_id");
+  } catch {
+    tagIdSupport[table] = true;
+  }
+  return tagIdSupport[table];
+}

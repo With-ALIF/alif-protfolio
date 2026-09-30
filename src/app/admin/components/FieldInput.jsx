@@ -11,16 +11,28 @@ import IconSelector from "./IconSelector";
 import GalleryEditor from "./GalleryEditor";
 import { StringListEditor, TimelineEditor, StatsEditor } from "./EntryEditors";
 
-export default function FieldInput({ field, value, section, projectOptions, onChange, onPickName, disabled }) {
-  if (field.type === "hidden") return null;
+export default function FieldInput({ field, value, tagId, section, projectOptions, onChange, onPickName, onPickTagId, disabled }) {
+  if (field.type === "hidden" || field.type === "tagref") return null;
   if (field.type === "image") return <ImageInput value={value} onChange={onChange} />;
   if (field.type === "techselect") return <TechSelector value={value} onChange={onChange} />;
   if (field.type === "tagselect") return <TagSelector value={value} onChange={onChange} />;
   if (field.type === "iconselect")
-    return <IconSelector value={value} onPick={(url, name) => { onChange(url); if (name) onPickName?.(name); }} />;
+    return (
+      <IconSelector
+        value={value}
+        tagId={tagId}
+        onPick={(url, tag) => {
+          onChange(url);
+          if (tag?.name) onPickName?.(tag.name);
+          onPickTagId?.(tag?.id || null);
+        }}
+        onPickTagId={onPickTagId}
+      />
+    );
   if (field.type === "galleryedit") return <GalleryEditor value={value} onChange={onChange} />;
   if (field.type === "timelineedit") return <TimelineEditor value={value} onChange={onChange} />;
-  if (field.type === "listedit") return <StringListEditor value={value} onChange={onChange} />;
+  if (field.type === "listedit")
+    return <StringListEditor value={value} onChange={onChange} itemLabel={field.item || "entry"} />;
   if (field.type === "statsedit") return <StatsEditor value={value} onChange={onChange} />;
   if (field.type === "bool")
     return (
@@ -53,17 +65,29 @@ export default function FieldInput({ field, value, section, projectOptions, onCh
     );
   if (field.type === "dbinfo") {
     const v = value || {};
-    const setDb = (patch) => onChange({ name: v.name || "", icon: v.icon || "", description: v.description || "", ...patch });
+    const setDb = (patch) => onChange({ name: v.name || "", icon: v.icon || "", description: v.description || "", tag_id: v.tag_id || null, ...patch });
     return (
       <div className={boxCls}>
-        <label className="block"><span className="text-xs text-zinc-400">Name (from Backend Services)</span><DbSelector value={v.name || ""} onPick={(name, icon) => setDb({ name, icon })} /></label>
-        <label className="block"><span className="text-xs text-zinc-400">Icon URL + Upload</span><ImageInput value={v.icon || ""} onChange={(url) => setDb({ icon: url })} /></label>
+        <label className="block"><span className="text-xs text-zinc-400">Name (from Backend Services)</span><DbSelector value={v.name || ""} onPick={(name, icon, tagId) => setDb({ name, icon, tag_id: tagId ?? null })} /></label>
+        <label className="block"><span className="text-xs text-zinc-400">Icon URL + Upload</span><ImageInput value={v.icon || ""} onChange={(url) => setDb({ icon: url, tag_id: null })} /></label>
         <label className="block"><span className="text-xs text-zinc-400">Description</span><textarea value={v.description || ""} onChange={(e) => setDb({ description: e.target.value })} rows={3} className={inputCls} /></label>
       </div>
     );
   }
   if (field.type === "textarea")
-    return <textarea value={value ?? ""} onChange={(e) => onChange(e.target.value)} rows={3} className={inputCls} />;
+    return (
+      <>
+        <textarea
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          rows={3}
+          readOnly={field.readOnly}
+          title={field.readOnly ? "Auto-generated from the project, not editable" : undefined}
+          className={`${inputCls} ${field.readOnly ? "cursor-not-allowed text-zinc-400" : ""}`}
+        />
+        {field.hint && !field.readOnly ? <p className={hintCls}>{field.hint}</p> : null}
+      </>
+    );
   if (field.type === "select")
     return (
       <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className={`${inputCls} [color-scheme:dark]`}>

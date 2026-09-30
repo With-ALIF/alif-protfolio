@@ -1,4 +1,4 @@
-import { replaceProjectTags, tagsByProject } from "./tags";
+import { replaceProjectTags, tagsByProject, supportsTagId } from "./tags";
 
 const COLS = ["project_id", "slug", "title", "description", "full_description", "github_url", "demo_url", "thumbnail_url", "status", "featured", "show_database", "show_github", "show_demo"];
 const pick = (src) => ({ ...Object.fromEntries(COLS.map((k) => [k, src?.[k] ?? null])), project_id: src?.project_id || null });
@@ -6,48 +6,90 @@ const pick = (src) => ({ ...Object.fromEntries(COLS.map((k) => [k, src?.[k] ?? n
 const arr = (v) => (Array.isArray(v) ? v : []);
 const bodies = (rows) => (rows || []).map((r) => r.body || "");
 
-async function children(sb, detailId) {
-  const tables = ["technologies", "features", "gallery", "timeline", "challenges", "solutions", "statistics"];
+const CHILD_TABLES = ["technologies", "features", "gallery", "timeline", "challenges", "solutions", "statistics"];
+
+// One request per child table covering ALL details rows, in parallel.
+// The previous per-row version cost 1 + 8N serial round trips.
+async function childrenByDetail(sb, ids) {
+  const results = await Promise.all([
+    ...CHILD_TABLES.map((t) =>
+      sb.from(`portfolio_detail_${t}`).select("*").in("detail_id", ids).order("sort_order", { ascending: true })
+    ),
+    sb.from("portfolio_detail_database").select("*").in("detail_id", ids),
+  ]);
   const out = {};
-  for (const t of tables) {
-    const r = await sb.from(`portfolio_detail_${t}`).select("*").eq("detail_id", detailId).order("sort_order", { ascending: true });
-    if (r.error) return { out: null, error: r.error };
-    out[t] = r.data || [];
+  for (let i = 0; i < CHILD_TABLES.length; i++) {
+    if (results[i].error) return { out: null, error: results[i].error };
+    out[CHILD_TABLES[i]] = results[i].data || [];
   }
-  const db = await sb.from("portfolio_detail_database").select("*").eq("detail_id", detailId).maybeSingle();
+  const db = results[CHILD_TABLES.length];
   if (db.error) return { out: null, error: db.error };
-  out.database = db.data || null;
+  out.database = db.data || [];
   return { out, error: null };
 }
 
+const groupByDetail = (rows) => {
+  const m = {};
+  for (const r of rows || []) (m[r.detail_id] = m[r.detail_id] || []).push(r);
+  return m;
+};
+
 export async function loadDetails(sb, orderBy) {
-  const d = await sb.from("portfolio_project_details").select("*").order(orderBy || "slug", { ascending: true });
+  const [d, t, g] = await Promise.all([
+    sb.from("portfolio_project_details").select("*").order(orderBy || "slug", { ascending: true }),
+    tagsByProject(sb),
+    sb.from("portfolio_tags").select("id,icon"),
+  ]);
   if (d.error) return { data: null, error: d.error };
-  const t = await tagsByProject(sb);
   if (t.error) return { data: null, error: t.error };
+  // Live tag icons: admin previews follow tag URL changes immediately.
+  const live = {};
+  if (!g.error) for (const r of g.data || []) if (r.id) live[r.id] = r.icon || "";
+  const parents = d.data || [];
+  if (parents.length === 0) return { data: [], error: null };
+  const c = await childrenByDetail(sb, parents.map((r) => r.id));
+  if (c.error) return { data: null, error: c.error };
+  const by = {};
+  for (const table of CHILD_TABLES) by[table] = groupByDetail(c.out[table]);
+  const dbBy = {};
+  for (const r of c.out.database) dbBy[r.detail_id] = r;
   const rows = [];
-  for (const r of d.data || []) {
-    const c = await children(sb, r.id);
-    if (c.error) return { data: null, error: c.error };
+  for (const r of parents) {
     const stats = {};
-    for (const s of c.out.statistics) if (s.label) stats[s.label] = s.value ?? "";
+    for (const s of by.statistics[r.id] || []) if (s.label) stats[s.label] = s.value ?? "";
+    const db = dbBy[r.id];
     rows.push({
       ...r,
       tags: r.project_id ? t.map[r.project_id] || [] : [],
-      technologies: (c.out.technologies || []).map((x) => ({ name: x.name || "", icon: x.icon || "" })),
-      features: bodies(c.out.features),
-      gallery: (c.out.gallery || []).map((x) => ({ title: x.title || "", image: x.image_url || "" })),
-      timeline: (c.out.timeline || []).map((x) => ({ date: x.date || "", title: x.title || "", detail: x.detail || "" })),
-      challenges: bodies(c.out.challenges),
-      solutions: bodies(c.out.solutions),
+      technologies: (by.technologies[r.id] || []).map((x) => ({
+        name: x.name || "",
+        icon: (x.tag_id && live[x.tag_id]) || x.icon || "",
+        tag_id: x.tag_id || null,
+      })),
+      features: bodies(by.features[r.id]),
+      gallery: (by.gallery[r.id] || []).map((x) => ({ title: x.title || "", image: x.image_url || "" })),
+      timeline: (by.timeline[r.id] || []).map((x) => ({ date: x.date || "", title: x.title || "", detail: x.detail || "" })),
+      challenges: bodies(by.challenges[r.id]),
+      solutions: bodies(by.solutions[r.id]),
       statistics: stats,
-      database_info: c.out.database ? { name: c.out.database.name || "", icon: c.out.database.icon || "", description: c.out.database.description || "" } : null,
+      database_info: db
+        ? {
+            name: db.name || "",
+            icon: (db.tag_id && live[db.tag_id]) || db.icon || "",
+            description: db.description || "",
+            tag_id: db.tag_id || null,
+          }
+        : null,
     });
   }
   return { data: rows, error: null };
 }
 
 async function replaceChildren(sb, did, payload) {
+  const [techTagOk, dbTagOk] = await Promise.all([
+    supportsTagId(sb, "portfolio_detail_technologies"),
+    supportsTagId(sb, "portfolio_detail_database"),
+  ]);
   const put = async (key, table, mapFn) => {
     const del = await sb.from(table).delete().eq("detail_id", did);
     if (del.error) return del;
@@ -56,7 +98,12 @@ async function replaceChildren(sb, did, payload) {
     return sb.from(table).insert(rows);
   };
   const steps = [
-    put("technologies", "portfolio_detail_technologies", (x, i) => ({ name: x?.name || "", icon: x?.icon || "", sort_order: i })),
+    put("technologies", "portfolio_detail_technologies", (x, i) => ({
+      name: x?.name || "",
+      icon: x?.icon || "",
+      ...(techTagOk ? { tag_id: x?.tag_id || null } : {}),
+      sort_order: i,
+    })),
     put("features", "portfolio_detail_features", (x, i) => ({ body: String(x ?? ""), sort_order: i })),
     put("gallery", "portfolio_detail_gallery", (x, i) => ({ title: x?.title || "", image_url: x?.image || "", sort_order: i })),
     put("timeline", "portfolio_detail_timeline", (x, i) => ({ date: x?.date || "", title: x?.title || "", detail: x?.detail || "", sort_order: i })),
@@ -78,7 +125,13 @@ async function replaceChildren(sb, did, payload) {
   const dd = await sb.from("portfolio_detail_database").delete().eq("detail_id", did);
   if (dd.error) return dd;
   if (db.name || db.icon || db.description) {
-    const ins = await sb.from("portfolio_detail_database").insert({ detail_id: did, name: db.name || "", icon: db.icon || "", description: db.description || "" });
+    const ins = await sb.from("portfolio_detail_database").insert({
+      detail_id: did,
+      name: db.name || "",
+      icon: db.icon || "",
+      description: db.description || "",
+      ...(dbTagOk ? { tag_id: db.tag_id || null } : {}),
+    });
     if (ins.error) return ins;
   }
   return { error: null };

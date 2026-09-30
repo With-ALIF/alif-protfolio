@@ -48,6 +48,7 @@ function mapProject(row, tags = []) {
     uuid: row.id,
     title: row.title,
     slug: row.slug,
+    shortDescription: row.short_description ?? "",
     description: row.description ?? "",
     image: row.image ?? "",
     github: row.github ?? "",
@@ -257,14 +258,25 @@ export async function getCmsBundle() {
         status: row.status ?? "Planned",
         featured: !!row.featured,
         tags: projectTags(row.project_id),
-        technologies: (techByDetail[row.id] || []).map((t) => ({ name: t.name ?? "", icon: t.icon ?? "" })),
+        // Icon URL resolves live from the tag row via tag_id (UUID link);
+        // the stored copy is only a fallback.
+        technologies: (techByDetail[row.id] || []).map((t) => ({
+          name: t.name ?? "",
+          icon: (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
+        })),
         features: (featByDetail[row.id] || []).map((t) => t.body ?? ""),
         gallery: (galByDetail[row.id] || []).map((t) => ({ title: t.title ?? "", image: t.image_url ?? "" })),
         timeline: (timeByDetail[row.id] || []).map((t) => ({ date: t.date ?? "", title: t.title ?? "", detail: t.detail ?? "" })),
         challenges: (chalByDetail[row.id] || []).map((t) => t.body ?? ""),
         solutions: (soluByDetail[row.id] || []).map((t) => t.body ?? ""),
         statistics: stats,
-        database_info: db ? { name: db.name ?? "", icon: db.icon ?? "", description: db.description ?? "" } : {},
+        database_info: db
+          ? {
+              name: db.name ?? "",
+              icon: (db.tag_id && tagById[db.tag_id]?.icon) || db.icon || "",
+              description: db.description ?? "",
+            }
+          : {},
         show_database: !!row.show_database,
         show_github: row.show_github !== false,
         show_demo: row.show_demo !== false,

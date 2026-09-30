@@ -6,12 +6,13 @@ export const buildPayload = (table, form) => {
   for (const f of table.fields) {
     const raw = form[f.key];
     if (f.type === "bool") payload[f.key] = !!raw;
+    else if (f.type === "tagref") payload[f.key] = raw || null;
     else if (f.type === "number") payload[f.key] = raw === "" ? 0 : Number(raw);
     else if (f.type === "lines") payload[f.key] = fromLines(raw);
     else if (f.type === "tagselect") payload[f.key] = Array.isArray(raw) ? raw.map((t) => String(t)) : [];
     else if (f.type === "techlines") payload[f.key] = textToTech(raw);
     else if (f.type === "techselect")
-      payload[f.key] = Array.isArray(raw) ? raw.map((t) => ({ name: t?.name || "", icon: t?.icon || "" })) : [];
+      payload[f.key] = Array.isArray(raw) ? raw.map((t) => ({ name: t?.name || "", icon: t?.icon || "", tag_id: t?.tag_id || null })) : [];
     else if (f.type === "gallerylines") payload[f.key] = textToGallery(raw);
     else if (f.type === "galleryedit")
       payload[f.key] = Array.isArray(raw) ? raw.map((g) => ({ title: g?.title || "", image: g?.image || "" })) : [];
@@ -30,7 +31,7 @@ export const buildPayload = (table, form) => {
       }
     }
     else if (f.type === "dbinfo")
-      payload[f.key] = { name: raw?.name || "", icon: raw?.icon || "", description: raw?.description || "" };
+      payload[f.key] = { name: raw?.name || "", icon: raw?.icon || "", description: raw?.description || "", tag_id: raw?.tag_id || null };
     else if (f.type === "sitecontent") payload[f.key] = raw && typeof raw === "object" ? raw : {};
     else if (f.type === "sitesection") payload[f.key] = raw || SITE_SECTIONS[0];
     else payload[f.key] = raw ?? "";

@@ -18,6 +18,7 @@ import { heroFallback } from "@/data/hero";
 
 export default function Home({ profile = siteProfile, hero = heroFallback }) {
   const shouldReduceMotion = useReducedMotion();
+  const portrait = profile.profileImage || siteProfile.profileImage;
 
   return (
     <div className="space-y-16 text-white">
@@ -106,14 +107,16 @@ export default function Home({ profile = siteProfile, hero = heroFallback }) {
           <div className="flex items-center justify-center pt-7">
       <div className="flex items-center justify-center">
   <div className="relative overflow-hidden rounded-lg w-[clamp(120px,12vw,170px)] h-[clamp(120px,12vw,170px)]">
-    <Image
-      src={profile.profileImage}
-      alt={`${profile.name} portrait`}
-      width={720}
-      height={720}
-      className="w-full h-full object-cover"
-      priority
-    />
+    {portrait ? (
+      <Image
+        src={portrait}
+        alt={`${profile.name} portrait`}
+        width={720}
+        height={720}
+        className="w-full h-full object-cover"
+        priority
+      />
+    ) : null}
   </div>
 </div>
           </div>

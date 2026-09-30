@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { AlertTriangle, ArrowLeft, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ChevronRight, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
 import { projects as localProjects, getCaseStudy as localGetCaseStudy } from "@/data/projects";
 import { getCmsBundle } from "@/lib/cms";
+import { renderRich } from "@/lib/richText";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ const Paragraphs = ({ text, splitAll = false, className = "" }) => {
     <>
       {parts.map((part, index) => (
         <p key={part} className={`leading-7 ${index > 0 ? "mt-4" : ""} ${className}`}>
-          {part}
+          {renderRich(part)}
         </p>
       ))}
     </>
@@ -94,7 +95,7 @@ export default async function ProjectDetails({ params }) {
       <header className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
         <div>
           <h1 className="mt-4 text-4xl font-bold tracking-normal sm:text-5xl">{title}</h1>
-          <p className="mt-5 text-lg leading-8 text-zinc-300">{description}</p>
+          <p className="mt-5 text-justify text-lg leading-8 text-zinc-300">{renderRich(description)}</p>
           {links.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-3">
               {links.map(({ label, href, icon: Icon }) => (
@@ -111,17 +112,19 @@ export default async function ProjectDetails({ params }) {
             </div>
           )}
         </div>
-        <Image
-          src={thumbnail}
-          alt={`${title} preview`}
-          width={900}
-          height={600}
-          className="aspect-video w-full rounded-lg object-cover"
-          priority
-        />
+        {thumbnail ? (
+          <Image
+            src={thumbnail}
+            alt={`${title} preview`}
+            width={900}
+            height={600}
+            className="aspect-video w-full rounded-lg object-cover"
+            priority
+          />
+        ) : null}
       </header>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
           <p className="text-sm text-zinc-400">Status</p>
           <p className="mt-1 font-semibold">{status}</p>
@@ -131,10 +134,6 @@ export default async function ProjectDetails({ params }) {
           <p className="mt-1 font-semibold">
             {technologies.length}
           </p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
-          <p className="text-sm text-zinc-400">Key Features</p>
-          <p className="mt-1 font-semibold">{features.length}</p>
         </div>
       </div>
 
@@ -166,7 +165,7 @@ export default async function ProjectDetails({ params }) {
                 key={feature}
                 className="rounded-md border border-white/10 bg-black/20 p-3"
               >
-                {feature}
+                {renderRich(feature)}
               </li>
             ))}
           </ul>
@@ -175,22 +174,22 @@ export default async function ProjectDetails({ params }) {
 
       {technologies.length > 0 && (
         <Section icon={Layers} title="Tech Stack">
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]">
             {technologies.map((tech) => (
               <span
                 key={tech.name}
-                className="inline-flex items-center gap-2 rounded-md bg-blue-500/15 px-3 py-2 text-sm text-blue-100"
+                className="group/tech inline-flex min-w-0 items-center justify-center gap-2.5 rounded-lg border border-blue-400/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-100 transition duration-200 hover:-translate-y-0.5 hover:border-blue-400/40 hover:bg-blue-500/20 hover:shadow-lg hover:shadow-blue-950/40"
               >
                 {tech.icon ? (
                   <Image
                     src={tech.icon}
-                    alt={tech.name}
-                    width={20}
-                    height={20}
-                    className="h-5 w-5 object-contain"
+                    alt=""
+                    width={22}
+                    height={22}
+                    className="h-6 w-6 shrink-0 object-contain transition duration-200 group-hover/tech:scale-110"
                   />
                 ) : null}
-                {tech.name}
+                <span className="truncate">{tech.name}</span>
               </span>
             ))}
           </div>
@@ -201,17 +200,19 @@ export default async function ProjectDetails({ params }) {
         <Section icon={Images} title="Screenshots">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {gallery.map((item, index) => (
-              <figure key={item.image} className="overflow-hidden rounded-md border border-white/10">
-                <Image
-                  src={item.image}
-                  alt={item.title || `${title} screenshot ${index + 1}`}
-                  width={700}
-                  height={420}
-                  className="aspect-video w-full object-cover"
-                />
+              <figure key={item.image || `${title}-${index}`} className="overflow-hidden rounded-md border border-white/10">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.title || `${title} screenshot ${index + 1}`}
+                    width={700}
+                    height={420}
+                    className="aspect-video w-full object-cover"
+                  />
+                ) : null}
                 {item.title && (
                   <figcaption className="px-3 py-2 text-sm text-zinc-400">
-                    {item.title}
+                    {renderRich(item.title)}
                   </figcaption>
                 )}
               </figure>
@@ -234,7 +235,7 @@ export default async function ProjectDetails({ params }) {
                   </span>
                   <div>
                     <h3 className="font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 leading-6 text-zinc-400 [text-wrap:pretty]">{item.detail}</p>
+                    <p className="mt-2 leading-6 text-zinc-400 [text-wrap:pretty]">{renderRich(item.detail)}</p>
                   </div>
                 </div>
               </div>
@@ -246,18 +247,24 @@ export default async function ProjectDetails({ params }) {
       <div className="grid gap-6 lg:grid-cols-2">
         {challenges.length > 0 && (
           <Section icon={AlertTriangle} title="Challenges">
-            <ul className="list-disc space-y-2 pl-5 text-justify">
+            <ul className="space-y-3">
               {challenges.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item} className="flex gap-2 text-justify">
+                  <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-amber-300" />
+                  <span>{renderRich(item)}</span>
+                </li>
               ))}
             </ul>
           </Section>
         )}
         {solutions.length > 0 && (
           <Section icon={Lightbulb} title="Solutions">
-            <ul className="list-disc space-y-2 pl-5 text-justify">
+            <ul className="space-y-3">
               {solutions.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item} className="flex gap-2 text-justify">
+                  <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-emerald-300" />
+                  <span>{renderRich(item)}</span>
+                </li>
               ))}
             </ul>
           </Section>

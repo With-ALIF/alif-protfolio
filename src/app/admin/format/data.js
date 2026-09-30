@@ -30,6 +30,7 @@ export const normalizeSiteData = (section, raw) => {
 
 export const pretty = (field, value) => {
   if (field.type === "bool") return !!value;
+  if (field.type === "tagref") return value || null;
   if (field.type === "tagselect") return Array.isArray(value) ? value : [];
   if (value === null || value === undefined)
     return field.type === "dbinfo" ? { name: "", icon: "", description: "" } : field.type === "sitecontent" ? {} : "";
@@ -45,8 +46,8 @@ export const pretty = (field, value) => {
   if (field.type === "statsedit") return value && typeof value === "object" && !Array.isArray(value) ? value : {};
   if (field.type === "dbinfo")
     return typeof value === "object" && !Array.isArray(value)
-      ? { name: value.name || "", icon: value.icon || "", description: value.description || "" }
-      : { name: "", icon: "", description: "" };
+      ? { name: value.name || "", icon: value.icon || "", description: value.description || "", tag_id: value.tag_id || null }
+      : { name: "", icon: "", description: "", tag_id: null };
   if (field.type === "sitecontent") return value && typeof value === "object" ? value : {};
   if (typeof value === "object") return JSON.stringify(value, null, 2);
   return String(value);
@@ -62,6 +63,8 @@ export const blankFor = (table) => {
     else if (f.key === "section") obj[f.key] = SITE_SECTIONS[0];
     else if (f.type === "dbinfo") obj[f.key] = { name: "", icon: "", description: "" };
     else if (f.type === "sitecontent") obj[f.key] = blankSiteData(SITE_SECTIONS[0]);
+    else if (f.type === "tagref") obj[f.key] = null;
+    else if (["listedit", "galleryedit", "timelineedit"].includes(f.type)) obj[f.key] = [];
     else obj[f.key] = "";
   }
   return obj;

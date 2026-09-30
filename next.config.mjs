@@ -25,6 +25,7 @@ const nextConfig = {
       "thumb.wikimedia.org",
       "upload.wikimedia.org",
       "static.thenounproject.com",
+      "icon.mnr.bd",
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

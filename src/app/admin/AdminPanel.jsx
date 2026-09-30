@@ -43,6 +43,7 @@ export default function AdminPanel({ user }) {
         <StatusBanner error={s.error} notice={s.notice} />
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <RowList
+            key={table.name}
             table={table}
             rows={s.rows}
             loading={s.loading}

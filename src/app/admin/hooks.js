@@ -4,7 +4,7 @@ import { getSupabase } from "@/lib/supabase";
 import { blankFor, blankSiteData, normalizeSiteData, pretty } from "./format/data";
 import { buildPayload } from "./format/payload";
 import { SITE_SECTIONS } from "./tables";
-import { deleteRow, insertRow, loadProjectOptions, loadRows, updateRow } from "./store";
+import { cascadeIconUrl, deleteRow, insertRow, loadProjectOptions, loadRows, updateRow } from "./store";
 
 export const slugify = (s) =>
   String(s || "")
@@ -32,15 +32,16 @@ export function useAdminTable(table, activeName) {
     }
     setLoading(true);
     setError("");
-    const { data, error: err } = await loadRows(sb, activeName, table.orderBy);
+    const [res, opts] = await Promise.all([
+      loadRows(sb, activeName, table.orderBy),
+      activeName === "alif_project_details" ? loadProjectOptions(sb) : Promise.resolve({ data: null }),
+    ]);
+    const { data, error: err } = res;
     if (err) {
       setError(err.message);
       setRows([]);
     } else setRows(data || []);
-    if (activeName === "alif_project_details") {
-      const { data: projs } = await loadProjectOptions(sb);
-      setProjectOptions(projs || []);
-    }
+    if (activeName === "alif_project_details") setProjectOptions(opts.data || []);
     setLoading(false);
   }, [activeName, table]);
   useEffect(() => {
@@ -100,7 +101,15 @@ export function useAdminTable(table, activeName) {
       if (activeName === "alif_projects" && !payload.slug) payload.slug = slugify(payload.title || "");
       const q = isNew ? await insertRow(sb, activeName, payload) : await updateRow(sb, activeName, editing.id, payload);
       if (q.error) throw q.error;
-      setNotice(isNew ? "Added." : "Saved.");
+      let msg = isNew ? "Added." : "Saved.";
+      // The Icons table owns icon URLs: a changed URL is pushed into every
+      // other table that copied it (skills, tools, technologies, database info).
+      if (activeName === "alif_tag" && !isNew && editing) {
+        const c = await cascadeIconUrl(sb, editing.icon, payload.icon);
+        if (c.error) throw c.error;
+        if (c.updated > 0) msg += ` Icon URL synced to ${c.updated} other place${c.updated === 1 ? "" : "s"}.`;
+      }
+      setNotice(msg);
       setEditing(null);
       await load();
     } catch (e) {

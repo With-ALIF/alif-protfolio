@@ -37,7 +37,7 @@ export default function Projects({ items, tagIcons, studies }) {
       >
         {list.map((project) => (
           <motion.div key={project.id} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-            <ProjectCard project={project} tagIcons={tagIcons} techStack={studies?.[project.id]?.technologies} />
+            <ProjectCard project={project} study={studies?.[project.id]} tagIcons={tagIcons} techStack={studies?.[project.id]?.technologies} />
           </motion.div>
         ))}
       </motion.div>

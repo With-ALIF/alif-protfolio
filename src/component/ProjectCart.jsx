@@ -4,24 +4,33 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Github, Globe } from "lucide-react";
 import { getCaseStudy } from "@/data/projects";
+import { renderRich } from "@/lib/richText";
 
-const ProjectCard = ({ project, techStack }) => {
-  const study = getCaseStudy(project.id);
+const ProjectCard = ({ project, study: studyProp, techStack }) => {
+  const study = studyProp || getCaseStudy(project.id);
   const showGithub = Boolean(project.showGithub && project.github);
   const showDemo = Boolean(project.demo);
   const stack = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];
+  // A short description set on the project overrides its own description.
+  const summary = project.shortDescription || project.description || "";
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-zinc-900/80 transition hover:-translate-y-1 hover:border-blue-400/40">
-      <Link href={`/projects/${project.id}`} className="block overflow-hidden">
-        <Image
-          src={project.image}
-          alt={`${project.title} project preview`}
-          width={800}
-          height={500}
-          className="aspect-video w-full object-cover transition duration-300 group-hover:scale-105"
-        />
-      </Link>
+      {project.image ? (
+        <Link href={`/projects/${project.id}`} className="block overflow-hidden">
+          <Image
+            src={project.image}
+            alt={`${project.title} project preview`}
+            width={800}
+            height={500}
+            className="aspect-video w-full object-cover transition duration-300 group-hover:scale-105"
+          />
+        </Link>
+      ) : (
+        <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-blue-500/20 to-zinc-800 text-4xl font-bold text-zinc-600">
+          {project.title?.[0] || "?"}
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col p-5">
         {study?.status && (
@@ -39,7 +48,7 @@ const ProjectCard = ({ project, techStack }) => {
         )}
 
         <h2 className="mt-4 text-2xl font-semibold text-white">{project.title}</h2>
-        <p className="mt-3 flex-1 text-sm leading-6 text-zinc-300">{project.description}</p>
+        {summary && <p className="mt-3 flex-1 text-sm leading-6 text-zinc-300">{renderRich(summary)}</p>}
 
         {stack.length > 0 && (
           <div className="mt-4">

@@ -18,15 +18,17 @@ const About = ({ paragraphs, image }) => {
     >
       <div className="grid gap-8 lg:grid-cols-[280px_1fr] lg:items-start">
         <div className="hidden lg:block">
-          <div className="overflow-hidden rounded-xl border border-white/10">
-            <Image
-              src={src}
-              alt={`${siteProfile.name} portrait`}
-              width={560}
-              height={720}
-              className="h-auto w-full object-cover"
-            />
-          </div>
+          {src ? (
+            <div className="overflow-hidden rounded-xl border border-white/10">
+              <Image
+                src={src}
+                alt={`${siteProfile.name} portrait`}
+                width={560}
+                height={720}
+                className="h-auto w-full object-cover"
+              />
+            </div>
+          ) : null}
         </div>
         <div>
           <div className="flex items-center justify-between mb-4">

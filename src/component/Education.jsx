@@ -73,7 +73,11 @@ const EducationSection = ({ items }) => {
               <div className="flex h-full flex-col rounded-xl border border-white/10 bg-black/20 p-5 transition hover:border-blue-400/30 hover:bg-white/[0.04]">
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border border-blue-400/30 bg-blue-500/15">
-                    <Image src={edu.logo} alt={`${edu.institute} logo`} width={48} height={48} className="h-full w-full object-cover" />
+                    {edu.logo ? (
+                      <Image src={edu.logo} alt={`${edu.institute} logo`} width={48} height={48} className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="block h-full w-full rounded-full bg-blue-300/40" />
+                    )}
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium leading-snug break-words text-blue-200">{edu.institute}</p>
