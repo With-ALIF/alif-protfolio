@@ -42,8 +42,17 @@ export const metadata = {
       "Full Stack Software Engineer building responsive, accessible, and production-ready MERN and Next.js applications.",
   },
   icons: {
-    icon: "/logo.jpg",
-    apple: "/logo.jpg",
+    // Explicit, in priority order. Modern browsers pick the SVG;
+    // legacy engines fall back to the multi-resolution ICO. Declared
+    // explicitly (rather than relying on app-directory file conventions)
+    // because defining `icons` at all makes Next drop icon.* / apple-icon.*
+    // file conventions from the document head.
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
 };
 

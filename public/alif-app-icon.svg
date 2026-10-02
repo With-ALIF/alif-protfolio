@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="ALIF">
+  <title>ALIF</title>
+  <rect width="512" height="512" rx="112" fill="#0B0E14"/>
+  <rect x="3.5" y="3.5" width="505" height="505" rx="108.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.1" stroke-width="3"/>
+  <path d="M204.762 300 H307.238 L335.286 362 H176.714 Z" fill="#3B82F6"/>
+  <path d="M240 62 H272 L452 452 H370 L256 200 L142 452 H60 Z" fill="#F2F4F8"/>
+</svg>

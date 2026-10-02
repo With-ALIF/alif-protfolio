@@ -65,11 +65,11 @@ const Navbar = ({ children, profile = siteProfile, nav = navItems }) => {
             onClick={() => scrollToSection("#home")}
           >
             <Image
-              src="/logo.jpg"
+              src="/alif-app-icon.svg"
               alt={`${profile.name} logo`}
               width={36}
               height={36}
-              className="h-9 w-9 rounded-lg border border-white/10 object-cover"
+              className="h-9 w-9 rounded-lg"
               priority
             />
             <span className="hidden leading-tight sm:block">
