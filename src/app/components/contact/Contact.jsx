@@ -51,13 +51,6 @@ export default function ContactForm({ profile = siteProfile }) {
     try {
       await sendContactEmail(formData);
 
-      // Best-effort archive in the database; never fail the success state.
-      fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }).catch(() => {});
-
       setFormData(initialForm);
       setStatus({
         type: "success",

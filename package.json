@@ -14,7 +14,6 @@
     "daisyui": "^4.12.24",
     "framer-motion": "^12.6.3",
     "lucide-react": "^0.476.0",
-    "mongoose": "^8.13.2",
     "next": "15.1.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

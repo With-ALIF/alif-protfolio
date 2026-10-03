@@ -1,4 +1,4 @@
-﻿<h1 align="center">
+<h1 align="center">
   Md Abdullah Al Khalid Alif — Portfolio
 </h1>
 
@@ -94,10 +94,7 @@ alif/
 │   ├── pages/                # Next.js Pages Router (legacy/API)
 │   └── utils/                # Shared utility functions
 ├── supabase/
-│   ├── portfolio_schema.sql  # Main portfolio schema
-│   ├── journey.sql           # Journey / timeline schema
-│   ├── schema.sql            # Full database schema
-│   └── storage.sql           # Storage bucket configuration
+│   └── schema.sql            # Unified database schema, seeds & storage setup
 ├── .env                      # Local environment variables (not committed)
 ├── .env.local                # Local overrides (not committed)
 ├── next.config.mjs           # Next.js configuration
@@ -172,8 +169,6 @@ All dynamic content is stored in **Supabase (PostgreSQL)**. The `src/lib/cms.js`
 - Work experience & education (timeline)
 - Awards & certifications
 - Services offered
-
-The schema files in the `/supabase` directory can be used to bootstrap the database from scratch.
 
 
 ---

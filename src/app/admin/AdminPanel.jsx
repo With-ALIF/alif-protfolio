@@ -7,6 +7,7 @@ import AdminHeader from "./components/AdminHeader";
 import TableTabs from "./components/TableTabs";
 import RowList, { StatusBanner } from "./components/RowList";
 import EditorPanel from "./components/EditorPanel";
+import ImageGuide from "./components/ImageGuide";
 import ConfirmModal from "./components/ConfirmModal";
 import { saveProjectAndSync, syncAllProjectsToDetails } from "./syncProject";
 
@@ -33,7 +34,7 @@ export default function AdminPanel({ user }) {
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white">
       <AdminHeader user={user} />
-      <div className="mx-auto max-w-6xl px-4 py-6">
+      <div className="mx-auto max-w-7xl px-4 py-6">
         <TableTabs tables={TABLES} activeName={activeName} onChange={setActiveName} />
         {activeName === "alif_projects" ? (
           <button onClick={() => setShowSync(true)} className="mt-3 rounded-full border border-white/15 px-4 py-2 text-sm hover:bg-white/10">
@@ -41,7 +42,7 @@ export default function AdminPanel({ user }) {
           </button>
         ) : null}
         <StatusBanner error={s.error} notice={s.notice} />
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr] xl:grid-cols-[1fr_1.2fr_0.9fr]">
           <RowList
             key={table.name}
             table={table}
@@ -68,6 +69,7 @@ export default function AdminPanel({ user }) {
               onCancel={() => s.setEditing(null)}
             />
           </div>
+          <ImageGuide activeName={activeName} />
         </div>
       </div>
       {pendingDelete ? (

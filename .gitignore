@@ -49,5 +49,5 @@ eslint.config.mjs
 !tailwind.config.mjs
 
 # Database / SQL files
-*.sql
-/supabase
+#*.sql
+#/supabase
