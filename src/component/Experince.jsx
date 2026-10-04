@@ -1,10 +1,9 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { experienceData as localExperience } from "@/data/experience";
 
 const ExperienceSection = ({ items }) => {
-  const list = [...(items ?? localExperience)].sort((a, b) => a.sortOrder - b.sortOrder);
+  const list = [...(items ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <div className="py-12 text-white">

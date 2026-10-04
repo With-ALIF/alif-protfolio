@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Brush, ChevronDown, Code, Monitor, Wrench } from "lucide-react";
-import { servicesData as localServices } from "@/data/services";
 
 const SERVICE_ICONS = {
   code: Code,
@@ -14,7 +13,7 @@ const SERVICE_ICONS = {
 
 export default function Services({ items }) {
   const [openId, setOpenId] = useState(null);
-  const visibleServices = [...(items ?? localServices)].sort(
+  const visibleServices = [...(items ?? [])].sort(
     (a, b) => a.sortOrder - b.sortOrder
   );
 

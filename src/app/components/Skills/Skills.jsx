@@ -1,9 +1,5 @@
 import { motion } from "framer-motion";
 import { Code2, Database, Layers, Sparkles, Wrench } from "lucide-react";
-import { getSkillIcon } from "@/data/skillIcons";
-import { skillGroups as localSkillGroups, toolsList } from "@/data/skills";
-
-const normKey = (name) => String(name).toLowerCase().replace(/[^a-z0-9]/g, "");
 
 const GROUP_STYLES = [
   {
@@ -43,11 +39,8 @@ const styleFor = (title) => {
   return GROUP_STYLES.find((g) => g.match.some((m) => t.includes(m))) || FALLBACK_STYLE;
 };
 
-export default function Skills({ groups, tagIcons }) {
-  const visibleGroups = groups ?? [
-    ...localSkillGroups,
-    { title: "Tools", skills: toolsList },
-  ];
+export default function Skills({ groups }) {
+  const visibleGroups = groups ?? [];
 
   return (
     <section className="space-y-10 text-white">
@@ -92,12 +85,12 @@ export default function Skills({ groups, tagIcons }) {
                 </span>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] sm:gap-2.5">
-                {group.skills.map((skill) => {
-                  const icon = tagIcons?.[normKey(skill)] || getSkillIcon(skill);
+                {(group.skills ?? []).map((skill) => {
+                  const icon = skill.icon;
 
                   return (
                     <div
-                      key={`${group.title}-${skill}`}
+                      key={`${group.title}-${skill.name}`}
                       className="group/skill flex min-w-0 items-center justify-center gap-2 rounded-lg border border-white/10 bg-black/20 px-2 py-2.5 text-center transition duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-black/40 sm:justify-start sm:gap-2.5 sm:p-3 sm:text-left"
                     >
                       {icon ? (
@@ -111,7 +104,7 @@ export default function Skills({ groups, tagIcons }) {
                           className="h-5 w-5 shrink-0 object-contain transition duration-200 group-hover/skill:scale-110"
                         />
                       ) : null}
-                      <p className="truncate text-sm font-medium sm:text-base">{skill}</p>
+                      <p className="truncate text-sm font-medium sm:text-base">{skill.name}</p>
                     </div>
                   );
                 })}

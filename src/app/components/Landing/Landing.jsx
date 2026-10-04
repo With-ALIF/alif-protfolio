@@ -38,7 +38,7 @@ export default function Landing({ cms }) {
       <section id="about" className="scroll-mt-24">
         <div className="mx-auto max-w-screen-xl space-y-12 sm:space-y-16">
           <Reveal>
-            <About paragraphs={d.about?.paragraphs} image={d.site?.profile?.profileImage} />
+            <About paragraphs={d.about?.paragraphs} image={d.site?.profile?.profileImage} name={d.site?.profile?.name} />
           </Reveal>
           <Reveal>
             <EducationSection items={d.education} />
@@ -47,7 +47,7 @@ export default function Landing({ cms }) {
       </section>
 
       <section id="skills" className="scroll-mt-24">
-        <Skills groups={d.skillGroups} tagIcons={d.tagIcons} />
+        <Skills groups={d.skillGroups} />
       </section>
 
       <section id="experience" className="scroll-mt-24">
@@ -62,7 +62,7 @@ export default function Landing({ cms }) {
       </section>
 
       <section id="projects" className="scroll-mt-24">
-        <Projects items={d.projects} tagIcons={d.tagIcons} studies={d.studies} />
+        <Projects items={d.projects} studies={d.studies} />
       </section>
 
       <section id="achievements" className="scroll-mt-24">

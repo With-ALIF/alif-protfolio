@@ -3,11 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Github, Globe } from "lucide-react";
-import { getCaseStudy } from "@/data/projects";
 import { renderRich } from "@/lib/richText";
 
 const ProjectCard = ({ project, study: studyProp, techStack }) => {
-  const study = studyProp || getCaseStudy(project.id);
+  const study = studyProp;
   const showGithub = Boolean(project.showGithub && project.github);
   const showDemo = Boolean(project.demo);
   const stack = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];

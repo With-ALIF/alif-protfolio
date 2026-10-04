@@ -26,11 +26,13 @@ export const metadata = {
     description:
       "Full Stack Software Engineer building responsive, accessible, and production-ready MERN and Next.js applications.",
     type: "website",
+    url: "/",
+    locale: "en_US",
     images: [
       {
         url: "/profile.jpg",
-        width: 1200,
-        height: 630,
+        width: 1024,
+        height: 1024,
         alt: "Md Abdullah Al Khalid Alif",
       },
     ],
@@ -41,17 +43,24 @@ export const metadata = {
     description:
       "Full Stack Software Engineer building responsive, accessible, and production-ready MERN and Next.js applications.",
   },
+  manifest: "/site.webmanifest",
   icons: {
-    // Explicit, in priority order. Modern browsers pick the SVG;
-    // legacy engines fall back to the multi-resolution ICO. Declared
-    // explicitly (rather than relying on app-directory file conventions)
-    // because defining `icons` at all makes Next drop icon.* / apple-icon.*
-    // file conventions from the document head.
+    // Declared explicitly instead of via app-directory file conventions
+    // (src/app/icon.*), because defining `icons` at all makes Next drop the
+    // file conventions from the head.
+    //
+    // Ordering matters. Google fetches /favicon.ico at the site root by
+    // convention, so it is listed first and carries the full 16/32/48 size
+    // set; browsers that prefer vector pick the SVG, and the 512 PNG is the
+    // last-resort raster. Every entry renders the same artwork, so the
+    // winner is cosmetic. `shortcut` re-declares the ICO under the legacy
+    // rel name that older engines and some crawlers match on.
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "512x512" },
     ],
+    shortcut: [{ url: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48" }],
     apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
   },
 };

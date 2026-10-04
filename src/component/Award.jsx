@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { awards as localAwards } from "@/data/awards";
 
 const formatDate = (value) =>
   new Date(`${value}T00:00:00`).toLocaleDateString("en-US", {
@@ -34,7 +33,7 @@ const AwardsSection = ({ items }) => {
     setActiveIndex(index);
   };
 
-  const visibleAwards = (items ?? localAwards)
+  const visibleAwards = (items ?? [])
     .filter((award) => award.isPublished)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 

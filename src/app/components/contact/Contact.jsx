@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaEnvelope, FaMapMarkerAlt, FaLinkedin, FaGithub, FaFacebook, FaTelegram, FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { useState } from "react";
-import { siteProfile } from "@/data/site";
 import { sendContactEmail } from "@/lib/emailjs";
 
 const initialForm = {
@@ -14,7 +13,7 @@ const initialForm = {
   message: "",
 };
 
-export default function ContactForm({ profile = siteProfile }) {
+export default function ContactForm({ profile = { socials: {} } }) {
   const [formData, setFormData] = useState(initialForm);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);

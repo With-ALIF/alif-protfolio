@@ -1,9 +1,12 @@
-import { projects } from "@/data/projects";
+import { getCmsBundle } from "@/lib/cms";
 
-const routes = ["", ...projects.map((project) => `/projects/${project.id}`)];
+export const revalidate = 3600;
 
-export default function sitemap() {
+export default async function sitemap() {
   const baseUrl = "https://alif.mnr.bd";
+  const { projects } = await getCmsBundle();
+
+  const routes = ["", ...projects.map((project) => `/projects/${project.id}`)];
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,

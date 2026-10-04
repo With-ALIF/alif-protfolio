@@ -1,7 +1,5 @@
 "use client";
 
-import { journeyMilestones as localJourney } from "@/data/journey";
-
 const circleClass = (label) =>
   `z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-blue-400 bg-zinc-950 font-bold text-white shadow-lg shadow-blue-950/40 ${
     label.length > 4 ? "text-[11px]" : "text-sm"
@@ -23,8 +21,8 @@ function MilestoneCard({ milestone }) {
 }
 
 export default function Journey({ items }) {
-  const list = items ?? localJourney;
-  const edge = 100 / (list.length * 2);
+  const list = items ?? [];
+  const edge = list.length > 0 ? 100 / (list.length * 2) : 0;
 
   return (
     <section className="space-y-10 text-white">

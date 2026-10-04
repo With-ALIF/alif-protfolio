@@ -3,10 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { education } from "@/data/education";
 
 const EducationSection = ({ items }) => {
-  const list = [...(items ?? education)].sort((a, b) => a.sortOrder - b.sortOrder);
+  const list = [...(items ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
   const trackRef = useRef(null);
   const [page, setPage] = useState(0);
   const [perView, setPerView] = useState(1);

@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Download, Menu, X } from "lucide-react";
-import { navItems, siteProfile } from "@/data/site";
 
-const Navbar = ({ children, profile = siteProfile, nav = navItems }) => {
+const Navbar = ({ children, profile = {}, nav = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 

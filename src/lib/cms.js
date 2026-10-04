@@ -1,16 +1,9 @@
-// Server-side CMS bundle: Supabase first, local data files as fallback.
-// All returned values are plain JSON (safe as client-component props).
+// Server-side CMS bundle. Supabase is the single source of truth for all
+// portfolio content — there are no local data-file fallbacks. Every shape is
+// guaranteed to be safe to render (arrays stay arrays, `profile.socials`
+// stays an object) so a database outage degrades to empty sections instead
+// of throwing.
 import { createClient } from "@supabase/supabase-js";
-import { projects as localProjects, caseStudies as localStudies } from "@/data/projects";
-import { siteProfile as localProfile, navItems as localNav } from "@/data/site";
-import { heroFallback } from "@/data/hero";
-import { aboutParagraphs } from "@/data/about";
-import { journeyMilestones } from "@/data/journey";
-import { awards as localAwards } from "@/data/awards";
-import { education as localEducation } from "@/data/education";
-import { experienceData as localExperience } from "@/data/experience";
-import { servicesData as localServices } from "@/data/services";
-import { skillGroups as localSkillGroups, toolsList as localTools } from "@/data/skills";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -41,6 +34,11 @@ async function fetchTable(name, orderBy = "sort_order") {
 }
 
 const bySort = (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+
+// Match key for technology/tag names. Case- and whitespace-insensitive but
+// punctuation-preserving, so "Java Script" matches "JavaScript" while "C" and
+// "C++" stay distinct.
+const tagKey = (name) => String(name || "").toLowerCase().replace(/\s+/g, "");
 
 function mapProject(row, tags = []) {
   return {
@@ -117,8 +115,6 @@ export async function getCmsBundle() {
   ]);
 
   // --- site / hero / about ---
-  // Old seeds lack the "group" column → ignore them and use local groups.
-  if (skillRows && !skillRows.some((r) => r.group)) skillRows = null;
   const profRow = profileRows?.[0];
   const socials = {};
   for (const s of socialRows || []) {
@@ -136,67 +132,61 @@ export async function getCmsBundle() {
           location: profRow.location ?? "",
           resumeUrl: profRow.resume_url ?? "",
           profileImage: profRow.profile_image ?? "",
-          socials: { ...localProfile.socials, ...socials },
+          socials,
         }
-      : localProfile,
-    nav:
-      Array.isArray(navRows) && navRows.length > 0
-        ? navRows.map((r) => ({ path: r.path || "#", title: r.title || "" }))
-        : localNav,
+      : { socials: {} },
+    nav: Array.isArray(navRows)
+      ? navRows.map((r) => ({ path: r.path || "#", title: r.title || "" }))
+      : [],
   };
   const heroRow = heroRows?.[0];
   const hero = {
-    headline: heroRow?.headline ?? heroFallback.headline,
-    value: heroRow?.value ?? heroFallback.value,
-    highlights:
-      Array.isArray(highlightRows) && highlightRows.length > 0
-        ? highlightRows.map((r) => ({ value: r.value ?? "", label: r.label ?? "" }))
-        : heroFallback.highlights,
+    headline: heroRow?.headline ?? "",
+    value: heroRow?.value ?? "",
+    highlights: Array.isArray(highlightRows)
+      ? highlightRows.map((r) => ({ value: r.value ?? "", label: r.label ?? "" }))
+      : [],
   };
   const about = {
-    paragraphs:
-      Array.isArray(paraRows) && paraRows.length > 0
-        ? paraRows.map((r) => r.body ?? "")
-        : aboutParagraphs,
+    paragraphs: Array.isArray(paraRows) ? paraRows.map((r) => r.body ?? "") : [],
   };
 
   // --- journey / awards ---
-  // Priority: portfolio_journey table → local fallback.
   const journey = {
     items: (() => {
-      if (journeyRows) {
-        const grouped = new Map();
-        for (const r of journeyRows) {
-          const label = r.label || "";
-          if (!grouped.has(label)) grouped.set(label, []);
-          grouped.get(label).push({ title: r.title, desc: r.description ?? "" });
-        }
-        const items = [...grouped.entries()].map(([label, items]) => ({ label, items }));
-        if (items.length > 0) return items;
+      if (!journeyRows) return [];
+      const grouped = new Map();
+      for (const r of journeyRows) {
+        const label = r.label || "";
+        if (!grouped.has(label)) grouped.set(label, []);
+        grouped.get(label).push({ title: r.title, desc: r.description ?? "" });
       }
-      return journeyMilestones;
+      return [...grouped.entries()].map(([label, items]) => ({ label, items }));
     })(),
   };
-  const awardsList = (() => {
-    const items = awardRows
-      ? awardRows.map((r) => ({
-          id: r.id,
-          title: r.title,
-          issuer: r.issuer ?? "",
-          image: r.image ?? "",
-          description: r.description ?? "",
-          date: r.date ?? "",
-          sortOrder: r.sort_order ?? 0,
-          isPublished: r.is_published !== false,
-        }))
-      : localAwards;
-    return items.filter((a) => a.isPublished !== false).sort(bySort);
-  })();
+  const awardsList = (awardRows || [])
+    .map((r) => ({
+      id: r.id,
+      title: r.title,
+      issuer: r.issuer ?? "",
+      image: r.image ?? "",
+      description: r.description ?? "",
+      date: r.date ?? "",
+      sortOrder: r.sort_order ?? 0,
+      isPublished: r.is_published !== false,
+    }))
+    .filter((a) => a.isPublished !== false)
+    .sort(bySort);
 
   // --- projects + details ---
   // Tags resolve via portfolio_project_tags → portfolio_tags (ordered by tag sort_order).
   const tagById = {};
-  for (const t of tagRows || []) tagById[t.id] = t;
+  const tagByName = new Map();
+  for (const t of tagRows || []) {
+    if (!t.name) continue;
+    tagById[t.id] = t;
+    if (!tagByName.has(tagKey(t.name))) tagByName.set(tagKey(t.name), t);
+  }
   const tagsByProject = {};
   for (const link of projectTagRows || []) {
     const t = tagById[link.tag_id];
@@ -209,7 +199,8 @@ export async function getCmsBundle() {
   }
   const projectTags = (pid) => (tagsByProject[pid] || []).map((t) => t.name);
 
-  const projects = (projectRows ? projectRows.map((r) => mapProject(r, projectTags(r.id))) : localProjects)
+  const projects = (projectRows || [])
+    .map((r) => mapProject(r, projectTags(r.id)))
     .filter((p) => p.isPublished !== false)
     .sort(bySort);
 
@@ -235,122 +226,124 @@ export async function getCmsBundle() {
   const slugByProjectId = {};
   for (const r of projectRows || []) slugByProjectId[r.id] = r.slug;
   const studies = {};
-  if (detailRows) {
+  for (const row of detailRows || []) {
     // Primary link: project_id → project slug. Fallback: row slug.
-    for (const row of detailRows) {
-      const key = (row.project_id && slugByProjectId[row.project_id]) || row.slug;
-      if (!key) continue;
-      const stats = {};
-      for (const s of statByDetail[row.id] || []) {
-        if (s.label) stats[s.label] = s.value ?? "";
-      }
-      const db = dbByDetail[row.id];
-      studies[key] = {
-        id: row.id,
-        project_id: row.project_id,
-        slug: key,
-        title: row.title ?? "",
-        description: row.description ?? "",
-        full_description: row.full_description ?? "",
-        github_url: row.github_url ?? "",
-        demo_url: row.demo_url ?? "",
-        thumbnail_url: row.thumbnail_url ?? "",
-        status: row.status ?? "Planned",
-        featured: !!row.featured,
-        tags: projectTags(row.project_id),
-        // Icon URL resolves live from the tag row via tag_id (UUID link);
-        // the stored copy is only a fallback.
-        technologies: (techByDetail[row.id] || []).map((t) => ({
-          name: t.name ?? "",
-          icon: (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
-        })),
-        features: (featByDetail[row.id] || []).map((t) => t.body ?? ""),
-        gallery: (galByDetail[row.id] || []).map((t) => ({ title: t.title ?? "", image: t.image_url ?? "" })),
-        timeline: (timeByDetail[row.id] || []).map((t) => ({ date: t.date ?? "", title: t.title ?? "", detail: t.detail ?? "" })),
-        challenges: (chalByDetail[row.id] || []).map((t) => t.body ?? ""),
-        solutions: (soluByDetail[row.id] || []).map((t) => t.body ?? ""),
-        statistics: stats,
-        database_info: db
-          ? {
-              name: db.name ?? "",
-              icon: (db.tag_id && tagById[db.tag_id]?.icon) || db.icon || "",
-              description: db.description ?? "",
-            }
-          : {},
-        show_database: !!row.show_database,
-        show_github: row.show_github !== false,
-        show_demo: row.show_demo !== false,
-      };
+    const key = (row.project_id && slugByProjectId[row.project_id]) || row.slug;
+    if (!key) continue;
+    const stats = {};
+    for (const s of statByDetail[row.id] || []) {
+      if (s.label) stats[s.label] = s.value ?? "";
     }
-  } else {
-    for (const s of localStudies) studies[s.id] = s;
+    const db = dbByDetail[row.id];
+    studies[key] = {
+      id: row.id,
+      project_id: row.project_id,
+      slug: key,
+      title: row.title ?? "",
+      description: row.description ?? "",
+      full_description: row.full_description ?? "",
+      github_url: row.github_url ?? "",
+      demo_url: row.demo_url ?? "",
+      thumbnail_url: row.thumbnail_url ?? "",
+      status: row.status ?? "Planned",
+      featured: !!row.featured,
+      tags: projectTags(row.project_id),
+      // Icon URL resolves live from the tag row via tag_id (UUID link);
+      // the stored copy is only a fallback.
+      technologies: (techByDetail[row.id] || []).map((t) => ({
+        name: t.name ?? "",
+        icon: (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
+      })),
+      features: (featByDetail[row.id] || []).map((t) => t.body ?? ""),
+      gallery: (galByDetail[row.id] || []).map((t) => ({ title: t.title ?? "", image: t.image_url ?? "" })),
+      timeline: (timeByDetail[row.id] || []).map((t) => ({ date: t.date ?? "", title: t.title ?? "", detail: t.detail ?? "" })),
+      challenges: (chalByDetail[row.id] || []).map((t) => t.body ?? ""),
+      solutions: (soluByDetail[row.id] || []).map((t) => t.body ?? ""),
+      statistics: stats,
+      database_info: db
+        ? {
+            name: db.name ?? "",
+            icon: (db.tag_id && tagById[db.tag_id]?.icon) || db.icon || "",
+            description: db.description ?? "",
+          }
+        : {},
+      show_database: !!row.show_database,
+      show_github: row.show_github !== false,
+      show_demo: row.show_demo !== false,
+    };
   }
 
-  // --- skills / tools / tags ---
-  let skillGroups = localSkillGroups.map((g) => ({ ...g, skills: [...g.skills] }));
+  // --- skills / tools ---
+  // Icons resolve per row through the tag_id foreign key, so two rows that
+  // merely look alike ("C" vs "C++") can never overwrite each other the way
+  // they did when icons were collected into one name-keyed lookup object.
+  // The tag_id is only trusted when the linked tag actually carries the same
+  // name; otherwise fall back to a punctuation-preserving name match, and
+  // finally to the row's own icon column.
+  const resolveIcon = (row) => {
+    const linked = row.tag_id ? tagById[row.tag_id] : null;
+    if (linked?.icon && tagKey(linked.name) === tagKey(row.name)) return linked.icon;
+    const byName = tagByName.get(tagKey(row.name));
+    if (byName?.icon) return byName.icon;
+    return row.icon || "";
+  };
+
+  // Rows without a `group` land in "Other" rather than being discarded.
+  let skillGroups = [];
   if (skillRows) {
     const order = ["Languages", "Frameworks", "Backend Services"];
     const grouped = new Map();
     for (const row of skillRows) {
       const g = row.group || "Other";
       if (!grouped.has(g)) grouped.set(g, []);
-      grouped.get(g).push(row.name);
+      grouped.get(g).push({ name: row.name, icon: resolveIcon(row) });
     }
     skillGroups = [
       ...order.filter((g) => grouped.has(g)).map((g) => ({ title: g, skills: grouped.get(g) })),
       ...[...grouped.keys()].filter((g) => !order.includes(g)).map((g) => ({ title: g, skills: grouped.get(g) })),
     ];
   }
-  const tools = toolRows ? toolRows.map((r) => r.name) : [...localTools];
+  const tools = (toolRows || []).map((r) => ({ name: r.name, icon: resolveIcon(r) }));
   if (!skillGroups.some((g) => g.title === "Tools") && tools.length > 0) {
     skillGroups = [...skillGroups, { title: "Tools", skills: tools }];
   }
-  const tagIcons = {};
-  if (tagRows) {
-    for (const row of tagRows) {
-      if (row.name) tagIcons[String(row.name).toLowerCase().replace(/[^a-z0-9]/g, "")] = row.icon || "";
-    }
-  }
 
   // --- education / experience / services ---
-  const education = (educationRows
-    ? educationRows.map((r) => ({
-        id: r.id,
-        degree: r.degree,
-        institute: r.institute ?? "",
-        district: r.district ?? "",
-        class: r.class ?? "",
-        year: r.year ?? "",
-        description: r.description ?? "",
-        logo: r.logo ?? "",
-        sortOrder: r.sort_order ?? 0,
-      }))
-    : localEducation
-  ).sort(bySort);
+  const education = (educationRows || [])
+    .map((r) => ({
+      id: r.id,
+      degree: r.degree,
+      institute: r.institute ?? "",
+      district: r.district ?? "",
+      class: r.class ?? "",
+      year: r.year ?? "",
+      description: r.description ?? "",
+      logo: r.logo ?? "",
+      sortOrder: r.sort_order ?? 0,
+    }))
+    .sort(bySort);
 
-  const experience = (experienceRows
-    ? experienceRows.map((r) => ({
-        id: r.id,
-        title: r.company ?? "",
-        role: r.role ?? "",
-        year: r.duration ?? "",
-        status: r.status ?? "Active",
-        logo: r.logo ?? "",
-        sortOrder: r.sort_order ?? 0,
-      }))
-    : localExperience
-  ).sort(bySort);
+  const experience = (experienceRows || [])
+    .map((r) => ({
+      id: r.id,
+      title: r.company ?? "",
+      role: r.role ?? "",
+      year: r.duration ?? "",
+      status: r.status ?? "Active",
+      logo: r.logo ?? "",
+      sortOrder: r.sort_order ?? 0,
+    }))
+    .sort(bySort);
 
-  const services = (serviceRows
-    ? serviceRows.map((r) => ({
-        id: r.id,
-        title: r.title,
-        icon: r.icon || "code",
-        desc: r.description ?? "",
-        sortOrder: r.sort_order ?? 0,
-      }))
-    : localServices
-  ).sort(bySort);
+  const services = (serviceRows || [])
+    .map((r) => ({
+      id: r.id,
+      title: r.title,
+      icon: r.icon || "code",
+      desc: r.description ?? "",
+      sortOrder: r.sort_order ?? 0,
+    }))
+    .sort(bySort);
 
   return {
     site,
@@ -361,7 +354,6 @@ export async function getCmsBundle() {
     projects,
     studies,
     skillGroups,
-    tagIcons,
     education,
     experience,
     services,

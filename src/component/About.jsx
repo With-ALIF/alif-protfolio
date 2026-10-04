@@ -2,12 +2,10 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { aboutParagraphs } from "@/data/about";
-import { siteProfile } from "@/data/site";
 
-const About = ({ paragraphs, image }) => {
-  const list = paragraphs?.length > 0 ? paragraphs : aboutParagraphs;
-  const src = image || siteProfile.profileImage;
+const About = ({ paragraphs, image, name }) => {
+  const list = paragraphs ?? [];
+  const src = image;
 
   return (
     <motion.div
@@ -22,7 +20,7 @@ const About = ({ paragraphs, image }) => {
             <div className="overflow-hidden rounded-xl border border-white/10">
               <Image
                 src={src}
-                alt={`${siteProfile.name} portrait`}
+                alt={`${name} portrait`}
                 width={560}
                 height={720}
                 className="h-auto w-full object-cover"

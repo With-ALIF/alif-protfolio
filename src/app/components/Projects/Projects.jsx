@@ -1,11 +1,10 @@
 "use client";
 
 import ProjectCard from "@/component/ProjectCart";
-import { projects } from "@/data/projects";
 import { motion } from "framer-motion";
 
-export default function Projects({ items, tagIcons, studies }) {
-  const list = items ?? projects;
+export default function Projects({ items, studies }) {
+  const list = items ?? [];
   return (
     <section className="space-y-10 text-white">
       <motion.div
@@ -37,7 +36,7 @@ export default function Projects({ items, tagIcons, studies }) {
       >
         {list.map((project) => (
           <motion.div key={project.id} variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-            <ProjectCard project={project} study={studies?.[project.id]} tagIcons={tagIcons} techStack={studies?.[project.id]?.technologies} />
+            <ProjectCard project={project} study={studies?.[project.id]} techStack={studies?.[project.id]?.technologies} />
           </motion.div>
         ))}
       </motion.div>

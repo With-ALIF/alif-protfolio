@@ -2,15 +2,9 @@
 
 import { motion } from "framer-motion";
 
-const experienceData = [
-  { value: "1+", label: "Years Experience" },
-  { value: "30+", label: "Projects Completed" },
-  { value: "5+", label: "Happy Clients" },
-  { value: "12+", label: "Live Websites" },
-];
-
 const ExperienceSummary = ({ highlights }) => {
-  const list = highlights?.length > 0 ? highlights : experienceData;
+  const list = highlights ?? [];
+  if (list.length === 0) return null;
   return (
     <motion.div
       className="text-white py-12"

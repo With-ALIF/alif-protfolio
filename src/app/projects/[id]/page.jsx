@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { AlertTriangle, ArrowLeft, ChevronRight, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
-import { projects as localProjects, getCaseStudy as localGetCaseStudy } from "@/data/projects";
 import { getCmsBundle } from "@/lib/cms";
 import { renderRich } from "@/lib/richText";
 
@@ -36,10 +35,8 @@ const Paragraphs = ({ text, splitAll = false, className = "" }) => {
 export default async function ProjectDetails({ params }) {
   const { id } = await params;
   const cms = await getCmsBundle();
-  const project =
-    (cms.projects || []).find((item) => item.id === id) ||
-    localProjects.find((item) => item.id === id);
-  const study = cms.studies?.[id] || localGetCaseStudy(id);
+  const project = (cms.projects || []).find((item) => item.id === id);
+  const study = cms.studies?.[id];
 
   if (!project && !study) {
     return (

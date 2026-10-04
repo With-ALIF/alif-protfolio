@@ -13,12 +13,10 @@ import {
   Terminal,
   UserRound,
 } from "lucide-react";
-import { siteProfile } from "@/data/site";
-import { heroFallback } from "@/data/hero";
 
-export default function Home({ profile = siteProfile, hero = heroFallback }) {
+export default function Home({ profile = { socials: {} }, hero = {} }) {
   const shouldReduceMotion = useReducedMotion();
-  const portrait = profile.profileImage || siteProfile.profileImage;
+  const portrait = profile.profileImage;
 
   return (
     <div className="space-y-16 text-white">
