@@ -6,6 +6,7 @@ import { loadDetails, saveDetail, removeDetail } from "./details";
 import { supportsTagId } from "./tags";
 
 const DIRECT = {
+  alif_tech_categories: "portfolio_tech_categories",
   alif_skills: "portfolio_skills",
   alif_tools: "portfolio_tools",
   alif_tag: "portfolio_tags",

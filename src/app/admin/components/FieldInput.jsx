@@ -4,7 +4,7 @@ import { SITE_SECTIONS } from "../tables";
 import { boxCls, hintCls, inputCls } from "../format/ui";
 import SiteContentEditor from "../editors/SiteContentEditor";
 import ImageInput from "./ImageInput";
-import TechSelector from "./TechSelector";
+import TechStackEditor from "./TechStackEditor";
 import TagSelector from "./TagSelector";
 import DbSelector from "./DbSelector";
 import IconSelector from "./IconSelector";
@@ -14,7 +14,7 @@ import { StringListEditor, TimelineEditor, StatsEditor } from "./EntryEditors";
 export default function FieldInput({ field, value, tagId, section, projectOptions, onChange, onPickName, onPickTagId, disabled }) {
   if (field.type === "hidden" || field.type === "tagref") return null;
   if (field.type === "image") return <ImageInput value={value} onChange={onChange} />;
-  if (field.type === "techselect") return <TechSelector value={value} onChange={onChange} />;
+  if (field.type === "techstack") return <TechStackEditor value={value} onChange={onChange} />;
   if (field.type === "tagselect") return <TagSelector value={value} onChange={onChange} />;
   if (field.type === "iconselect")
     return (

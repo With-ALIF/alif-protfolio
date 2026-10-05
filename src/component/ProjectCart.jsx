@@ -5,13 +5,24 @@ import Link from "next/link";
 import { ArrowRight, Github, Globe } from "lucide-react";
 import { renderRich } from "@/lib/richText";
 
+// The project card is a summary, so it only surfaces the core stack. A chip
+// qualifies when its category name contains one of these words (case and
+// spacing insensitive), so "Frontend", "Backend Services" and "Programming
+// Language" all match. Everything else stays on the project's detail page.
+const CARD_CATEGORY_KEYWORDS = ["frontend", "backend", "language"];
+
+const onCard = (tech) => {
+  const category = String(tech?.categoryName || "").toLowerCase().trim();
+  return CARD_CATEGORY_KEYWORDS.some((k) => category.includes(k));
+};
+
 const ProjectCard = ({ project, study: studyProp, techStack }) => {
   const study = studyProp;
   const showGithub = Boolean(project.showGithub && project.github);
   const showDemo = Boolean(project.demo);
-  const stack = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];
-  // A short description set on the project overrides its own description.
-  const summary = project.shortDescription || project.description || "";
+  const all = (Array.isArray(techStack) && techStack.length > 0 ? techStack : study?.technologies) || [];
+  const stack = all.filter((t) => t?.name).filter(onCard);
+  const summary = project.description || "";
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-zinc-900/80 transition hover:-translate-y-1 hover:border-blue-400/40">
@@ -52,17 +63,17 @@ const ProjectCard = ({ project, study: studyProp, techStack }) => {
         {stack.length > 0 && (
           <div className="mt-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Tech Stack</p>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-2 grid grid-cols-3 gap-1.5">
               {stack.map((t) => (
                 <span
                   key={t.name}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-white/10 px-2 py-1 text-xs text-zinc-300"
+                  className="flex min-w-0 items-center justify-center gap-1 rounded-md border border-white/10 bg-black/20 px-1.5 py-1.5 text-xs text-zinc-300"
                 >
                   {t.icon ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={t.icon} alt="" className="h-3.5 w-3.5 object-contain" />
+                    <img src={t.icon} alt="" width={14} height={14} loading="lazy" className="h-3.5 w-3.5 shrink-0 object-contain" />
                   ) : null}
-                  {t.name}
+                  <span className="truncate">{t.name}</span>
                 </span>
               ))}
             </div>

@@ -37,6 +37,9 @@ export const pretty = (field, value) => {
   if (field.type === "lines") return Array.isArray(value) ? value.join("\n") : typeof value === "string" ? value : "";
   if (field.type === "techlines") return techToText(value);
   if (field.type === "techselect") return Array.isArray(value) ? value : [];
+  // Without this the generic object fallback below stringifies the array, and
+  // the editor then reads it as "not an array" and shows nothing.
+  if (field.type === "techstack") return Array.isArray(value) ? value : [];
   if (field.type === "gallerylines") return galleryToText(value);
   if (field.type === "galleryedit") return Array.isArray(value) ? value : [];
   if (field.type === "timelinelines") return timelineToText(value);
@@ -64,7 +67,7 @@ export const blankFor = (table) => {
     else if (f.type === "dbinfo") obj[f.key] = { name: "", icon: "", description: "" };
     else if (f.type === "sitecontent") obj[f.key] = blankSiteData(SITE_SECTIONS[0]);
     else if (f.type === "tagref") obj[f.key] = null;
-    else if (["listedit", "galleryedit", "timelineedit"].includes(f.type)) obj[f.key] = [];
+    else if (["listedit", "galleryedit", "timelineedit", "techstack"].includes(f.type)) obj[f.key] = [];
     else obj[f.key] = "";
   }
   return obj;

@@ -2,6 +2,16 @@ import { F } from "./base";
 
 export const otherTables = [
   {
+    // Global Technology Stack categories. Created and ordered here, then
+    // referenced by UUID from each project's technologies.
+    name: "alif_tech_categories",
+    label: "Tech Categories",
+    orderBy: "sort_order",
+    listBy: (r) => `${r.sort_order ?? 0} · ${r.name}`,
+    searchable: true,
+    fields: [F("name", "Name"), F("sort_order", "Sort order", "number")],
+  },
+  {
     name: "alif_skills",
     label: "Skills",
     orderBy: "sort_order",

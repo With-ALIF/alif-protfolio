@@ -51,3 +51,21 @@ export async function supportsTagId(sb, table) {
   }
   return tagIdSupport[table];
 }
+
+// Same idea for the Technology Stack category grouping, which is optional
+// until supabase/migrations/20260101_add_tech_categories.sql has been run.
+// Without it the admin still loads/saves a flat technology list.
+const techGroupSupport = {};
+export async function supportsTechGroups(sb) {
+  if (techGroupSupport.value !== undefined) return techGroupSupport.value;
+  try {
+    const cat = await sb.from("portfolio_tech_categories").select("id").limit(1);
+    const col = await sb.from("portfolio_detail_technologies").select("category_id").limit(1);
+    // Only "relation/column does not exist" means "migration not applied yet".
+    const missing = (e) => !!e && /does not exist|not found|schema cache/i.test(String(e.message || ""));
+    techGroupSupport.value = !missing(cat.error) && !missing(col.error);
+  } catch {
+    techGroupSupport.value = true;
+  }
+  return techGroupSupport.value;
+}

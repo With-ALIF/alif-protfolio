@@ -40,13 +40,35 @@ const bySort = (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
 // "C++" stay distinct.
 const tagKey = (name) => String(name || "").toLowerCase().replace(/\s+/g, "");
 
+// Groups a project's technologies under the global category list, in the
+// admin-defined category order. Rules the public page relies on: a nameless
+// technology is dropped, and a category left with no technologies is dropped
+// too. Technologies that belong to no category are NOT rendered here — the
+// public page only shows filed categories. The admin still lists them (see
+// loadDetails) so they can be put in a category instead of vanishing.
+function groupTechnologies(categoryRows, techRows, resolveIcon) {
+  const groups = [];
+  const index = new Map();
+  // Trim before the emptiness check: " " is truthy in JS and would otherwise
+  // keep a nameless chip (and its category) alive on the public page.
+  const toTech = (t) => ({ name: String(t.name ?? "").trim(), icon: resolveIcon(t) });
+
+  for (const row of categoryRows || []) {
+    const techs = (techRows || []).filter((t) => t.category_id === row.id).map(toTech).filter((t) => t.name);
+    const entry = { id: row.id, name: String(row.name ?? "").trim(), technologies: techs };
+    index.set(row.id, entry);
+    groups.push(entry);
+  }
+
+  return groups.filter((g) => g.technologies.length > 0);
+}
+
 function mapProject(row, tags = []) {
   return {
     id: row.slug,
     uuid: row.id,
     title: row.title,
     slug: row.slug,
-    shortDescription: row.short_description ?? "",
     description: row.description ?? "",
     image: row.image ?? "",
     github: row.github ?? "",
@@ -86,6 +108,7 @@ export async function getCmsBundle() {
     educationRows,
     experienceRows,
     serviceRows,
+    techCategoryRows,
   ] = await Promise.all([
     fetchTable("portfolio_profiles", "created_at"),
     fetchTable("portfolio_socials", "created_at"),
@@ -112,6 +135,7 @@ export async function getCmsBundle() {
     fetchTable("portfolio_education"),
     fetchTable("portfolio_experience"),
     fetchTable("portfolio_services"),
+    fetchTable("portfolio_tech_categories"),
   ]);
 
   // --- site / hero / about ---
@@ -225,6 +249,8 @@ export async function getCmsBundle() {
 
   const slugByProjectId = {};
   for (const r of projectRows || []) slugByProjectId[r.id] = r.slug;
+  const techCategoryName = {};
+  for (const c of techCategoryRows || []) techCategoryName[c.id] = String(c.name ?? "");
   const studies = {};
   for (const row of detailRows || []) {
     // Primary link: project_id → project slug. Fallback: row slug.
@@ -253,7 +279,16 @@ export async function getCmsBundle() {
       technologies: (techByDetail[row.id] || []).map((t) => ({
         name: t.name ?? "",
         icon: (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
+        // Carried through so the project card can filter chips by category.
+        categoryId: t.category_id ?? null,
+        categoryName: techCategoryName[t.category_id] ?? "",
       })),
+      // Same technologies, grouped by admin-defined category for the details page.
+      techCategories: groupTechnologies(
+        techCategoryRows || [],
+        techByDetail[row.id] || [],
+        (t) => (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
+      ),
       features: (featByDetail[row.id] || []).map((t) => t.body ?? ""),
       gallery: (galByDetail[row.id] || []).map((t) => ({ title: t.title ?? "", image: t.image_url ?? "" })),
       timeline: (timeByDetail[row.id] || []).map((t) => ({ date: t.date ?? "", title: t.title ?? "", detail: t.detail ?? "" })),

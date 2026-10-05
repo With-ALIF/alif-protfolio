@@ -146,15 +146,24 @@ CREATE TABLE IF NOT EXISTS portfolio_project_details (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS portfolio_tech_categories (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS portfolio_detail_technologies (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   detail_id UUID NOT NULL REFERENCES portfolio_project_details(id) ON DELETE CASCADE,
+  category_id UUID REFERENCES portfolio_tech_categories(id) ON DELETE SET NULL,
   name TEXT NOT NULL DEFAULT '',
   icon TEXT DEFAULT '',
   sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now(),
-  CONSTRAINT portfolio_detail_technologies_detail_sort_key UNIQUE (detail_id, sort_order)
+  CONSTRAINT portfolio_detail_technologies_detail_category_sort_key UNIQUE (detail_id, category_id, sort_order)
 );
 
 CREATE TABLE IF NOT EXISTS portfolio_detail_features (
@@ -344,7 +353,7 @@ BEGIN
     'portfolio_profiles','portfolio_socials','portfolio_nav_items',
     'portfolio_hero','portfolio_hero_highlights','portfolio_about_paragraphs',
     'portfolio_tags','portfolio_projects','portfolio_project_tags',
-    'portfolio_project_details','portfolio_detail_technologies','portfolio_detail_features',
+    'portfolio_project_details','portfolio_tech_categories','portfolio_detail_technologies','portfolio_detail_features',
     'portfolio_detail_gallery','portfolio_detail_timeline','portfolio_detail_challenges',
     'portfolio_detail_solutions','portfolio_detail_statistics','portfolio_detail_database',
     'portfolio_skills','portfolio_tools','portfolio_education','portfolio_experience',
@@ -363,7 +372,7 @@ BEGIN
     'portfolio_profiles','portfolio_socials','portfolio_nav_items',
     'portfolio_hero','portfolio_hero_highlights','portfolio_about_paragraphs',
     'portfolio_tags','portfolio_projects','portfolio_project_tags',
-    'portfolio_project_details','portfolio_detail_technologies','portfolio_detail_features',
+    'portfolio_project_details','portfolio_tech_categories','portfolio_detail_technologies','portfolio_detail_features',
     'portfolio_detail_gallery','portfolio_detail_timeline','portfolio_detail_challenges',
     'portfolio_detail_solutions','portfolio_detail_statistics','portfolio_detail_database',
     'portfolio_skills','portfolio_tools','portfolio_education','portfolio_experience',

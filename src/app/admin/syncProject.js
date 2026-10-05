@@ -25,12 +25,12 @@ export async function saveProjectAndSync(s, activeName) {
     if (error) throw error;
     const match = (details || []).find((d) => d.project_id === pid);
     // Details' Short description is read-only in the admin, so it is always
-    // (re)synced from the project: short_description if set, else description.
-    const shortDescription = snapshot.short_description || snapshot.description || "";
+    // (re)synced from the project's description.
+    const summary = snapshot.description || "";
     const card = {
       title: snapshot.title || "",
       slug: snapshot.slug || "",
-      description: shortDescription,
+      description: summary,
       thumbnail_url: snapshot.image || "",
     };
     if (Array.isArray(snapshot.tags)) card.tags = snapshot.tags;
@@ -48,7 +48,7 @@ export async function saveProjectAndSync(s, activeName) {
       ...match,
       title: snapshot.title || "",
       slug: snapshot.slug || "",
-      description: shortDescription,
+      description: summary,
       thumbnail_url: snapshot.image || "",
       tags: snapshot.tags,
     });
@@ -81,7 +81,7 @@ export async function syncAllProjectsToDetails(s) {
       ...m,
       title: p.title || "",
       slug: p.slug || "",
-      description: p.short_description || p.description || "",
+      description: p.description || "",
       thumbnail_url: p.image || "",
       tags: p.tags || [],
     });

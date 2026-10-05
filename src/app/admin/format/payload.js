@@ -13,6 +13,16 @@ export const buildPayload = (table, form) => {
     else if (f.type === "techlines") payload[f.key] = textToTech(raw);
     else if (f.type === "techselect")
       payload[f.key] = Array.isArray(raw) ? raw.map((t) => ({ name: t?.name || "", icon: t?.icon || "", tag_id: t?.tag_id || null })) : [];
+    else if (f.type === "techstack")
+      payload[f.key] = Array.isArray(raw)
+        ? raw.map((g) => ({
+            id: g?.id || null,
+            name: g?.name || "",
+            technologies: Array.isArray(g?.technologies)
+              ? g.technologies.map((t) => ({ name: t?.name || "", icon: t?.icon || "", tag_id: t?.tag_id || null }))
+              : [],
+          }))
+        : [];
     else if (f.type === "gallerylines") payload[f.key] = textToGallery(raw);
     else if (f.type === "galleryedit")
       payload[f.key] = Array.isArray(raw) ? raw.map((g) => ({ title: g?.title || "", image: g?.image || "" })) : [];

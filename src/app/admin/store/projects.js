@@ -1,7 +1,7 @@
 // Virtual alif_projects rows <-> portfolio_projects + tag junction.
 import { replaceProjectTags, tagsByProject } from "./tags";
 
-const COLS = ["title", "slug", "short_description", "description", "image", "github", "demo", "featured", "is_published", "show_github", "sort_order"];
+const COLS = ["title", "slug", "description", "image", "github", "demo", "featured", "is_published", "show_github", "sort_order"];
 const pick = (src) => Object.fromEntries(COLS.map((k) => [k, src?.[k]]));
 
 export async function loadProjects(sb, orderBy) {

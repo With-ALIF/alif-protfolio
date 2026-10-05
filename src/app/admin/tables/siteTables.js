@@ -20,7 +20,6 @@ export const siteTables = [
     fields: [
       F("title", "Title"),
       F("slug", "Slug", "text", { readOnly: true }),
-      F("short_description", "Short description (card)", "textarea", { hint: "Wrap a word in **word** to bold it on the site." }),
       F("description", "Description", "textarea", { hint: "Wrap a word in **word** to bold it on the site." }),
       F("image", "Image URL + Upload", "image"),
       F("github", "GitHub URL"),
@@ -47,7 +46,7 @@ export const siteTables = [
       F("thumbnail_url", "Thumbnail URL + Upload", "image"),
       F("status", "Status"),
       F("featured", "Featured", "bool"),
-      F("technologies", "Technologies (select from Technology Icons)", "techselect"),
+      F("tech_categories", "Technology Stack (category + technology)", "techstack"),
       F("features", "Features (numbered)", "listedit", { item: "feature" }),
       F("gallery", "Gallery (Title + Upload)", "galleryedit"),
       F("timeline", "Timeline (entry per phase)", "timelineedit"),

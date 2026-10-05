@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AlertTriangle, ArrowLeft, ChevronRight, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Boxes, ChevronRight, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
 import { getCmsBundle } from "@/lib/cms";
 import { renderRich } from "@/lib/richText";
 
@@ -14,6 +14,26 @@ const Section = ({ icon: Icon, title, children }) => (
     <div className="mt-4 text-zinc-300">{children}</div>
   </section>
 );
+
+// Category accent colours. Assigned from the category NAME, so the same
+// category always gets the same colour on every project and no colour or
+// category name is hardcoded anywhere.
+const TONES = [
+  { text: "text-sky-300", edge: "border-sky-400/70" },
+  { text: "text-emerald-300", edge: "border-emerald-400/70" },
+  { text: "text-amber-300", edge: "border-amber-400/70" },
+  { text: "text-violet-300", edge: "border-violet-400/70" },
+  { text: "text-rose-300", edge: "border-rose-400/70" },
+  { text: "text-cyan-300", edge: "border-cyan-400/70" },
+  { text: "text-orange-300", edge: "border-orange-400/70" },
+  { text: "text-lime-300", edge: "border-lime-400/70" },
+];
+
+const toneFor = (key) => {
+  let h = 5381;
+  for (const ch of String(key || "")) h = ((h * 33) ^ ch.charCodeAt(0)) >>> 0;
+  return TONES[h % TONES.length];
+};
 
 const Paragraphs = ({ text, splitAll = false, className = "" }) => {
   const parts = String(text || "")
@@ -58,6 +78,7 @@ export default async function ProjectDetails({ params }) {
   const thumbnail = study?.thumbnail_url || project?.image;
   const status = study?.status || (project?.isPublished ? "Published" : "Draft");
   const technologies = study?.technologies || [];
+  const techCategories = study?.techCategories || [];
   const features = study?.features || [];
   const gallery = study?.gallery || [];
   const timeline = study?.timeline || [];
@@ -169,28 +190,50 @@ export default async function ProjectDetails({ params }) {
         </Section>
       )}
 
-      {technologies.length > 0 && (
-        <Section icon={Layers} title="Tech Stack">
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]">
-            {technologies.map((tech) => (
-              <span
-                key={tech.name}
-                className="group/tech inline-flex min-w-0 items-center justify-center gap-2.5 rounded-lg border border-blue-400/20 bg-blue-500/10 px-4 py-3 text-sm font-medium text-blue-100 transition duration-200 hover:-translate-y-0.5 hover:border-blue-400/40 hover:bg-blue-500/20 hover:shadow-lg hover:shadow-blue-950/40"
-              >
-                {tech.icon ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={tech.icon}
-                    alt=""
-                    width={22}
-                    height={22}
-                    loading="lazy"
-                    className="h-6 w-6 shrink-0 object-contain transition duration-200 group-hover/tech:scale-110"
-                  />
-                ) : null}
-                <span className="truncate">{tech.name}</span>
-              </span>
-            ))}
+      {techCategories.length > 0 && (
+        <Section icon={Layers} title="Technology Stack">
+          {/* Stacked on mobile, side-by-side columns from lg up. A grid (not CSS
+              columns) keeps the admin-defined category order intact. */}
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {techCategories.map((group, gi) => {
+              const chips = (group.technologies || []).filter((t) => t.name);
+              if (chips.length === 0) return null;
+              const tone = toneFor(group.name || `uncategorised-${gi}`);
+              return (
+                <div
+                  key={group.id || `loose-${gi}`}
+                  className={`rounded-lg border border-white/10 border-l-2 ${group.name ? tone.edge : "border-l-white/15"} bg-black/20 p-4`}
+                >
+                  {group.name ? (
+                    <h3 className={`mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider ${tone.text}`}>
+                      <Boxes className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      <span className="truncate">{group.name}</span>
+                    </h3>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2">
+                    {chips.map((tech) => (
+                      <span
+                        key={tech.name}
+                        className="group/tech inline-flex min-w-0 max-w-full items-center gap-2 rounded-md border border-white/10 bg-black/30 px-2.5 py-1.5 text-sm font-medium text-zinc-200 transition duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.06] hover:shadow-md hover:shadow-black/40"
+                      >
+                        {tech.icon ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={tech.icon}
+                            alt=""
+                            width={16}
+                            height={16}
+                            loading="lazy"
+                            className="h-4 w-4 shrink-0 object-contain transition duration-200 group-hover/tech:scale-110"
+                          />
+                        ) : null}
+                        <span className="truncate">{tech.name}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </Section>
       )}
