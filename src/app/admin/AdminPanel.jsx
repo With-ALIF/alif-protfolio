@@ -69,7 +69,7 @@ export default function AdminPanel({ user }) {
               onCancel={() => s.setEditing(null)}
             />
           </div>
-          <ImageGuide activeName={activeName} />
+          <ImageGuide activeName={activeName} section={s.form.section} />
         </div>
       </div>
       {pendingDelete ? (

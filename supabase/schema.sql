@@ -251,15 +251,6 @@ CREATE TABLE IF NOT EXISTS portfolio_skills (
   CONSTRAINT portfolio_skills_name_group_key UNIQUE (name, "group")
 );
 
-CREATE TABLE IF NOT EXISTS portfolio_tools (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE,
-  icon TEXT DEFAULT '',
-  sort_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
-);
-
 CREATE TABLE IF NOT EXISTS portfolio_education (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   degree TEXT NOT NULL,
@@ -356,7 +347,7 @@ BEGIN
     'portfolio_project_details','portfolio_tech_categories','portfolio_detail_technologies','portfolio_detail_features',
     'portfolio_detail_gallery','portfolio_detail_timeline','portfolio_detail_challenges',
     'portfolio_detail_solutions','portfolio_detail_statistics','portfolio_detail_database',
-    'portfolio_skills','portfolio_tools','portfolio_education','portfolio_experience',
+    'portfolio_skills','portfolio_education','portfolio_experience',
     'portfolio_services','portfolio_reviews','portfolio_journey','portfolio_awards'
   ]
   LOOP
@@ -375,7 +366,7 @@ BEGIN
     'portfolio_project_details','portfolio_tech_categories','portfolio_detail_technologies','portfolio_detail_features',
     'portfolio_detail_gallery','portfolio_detail_timeline','portfolio_detail_challenges',
     'portfolio_detail_solutions','portfolio_detail_statistics','portfolio_detail_database',
-    'portfolio_skills','portfolio_tools','portfolio_education','portfolio_experience',
+    'portfolio_skills','portfolio_education','portfolio_experience',
     'portfolio_services','portfolio_reviews','portfolio_journey','portfolio_awards'
   ]
   LOOP

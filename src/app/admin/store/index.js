@@ -8,7 +8,6 @@ import { supportsTagId } from "./tags";
 const DIRECT = {
   alif_tech_categories: "portfolio_tech_categories",
   alif_skills: "portfolio_skills",
-  alif_tools: "portfolio_tools",
   alif_tag: "portfolio_tags",
   alif_education: "portfolio_education",
   alif_experience: "portfolio_experience",
@@ -61,7 +60,6 @@ export async function deleteRow(sb, name, row) {
 // NOTE: portfolio_detail_database has no `id` column (keyed by detail_id).
 const ICON_REFS = [
   { table: "portfolio_skills", key: "id" },
-  { table: "portfolio_tools", key: "id" },
   { table: "portfolio_detail_technologies", key: "id" },
   { table: "portfolio_detail_database", key: "detail_id" },
 ];

@@ -28,13 +28,6 @@ export const otherTables = [
     ],
   },
   {
-    name: "alif_tools",
-    label: "Tools",
-    orderBy: "sort_order",
-    listBy: (r) => `${r.sort_order ?? 0} · ${r.name}`,
-    fields: [F("name", "Name"), F("icon", "Icon (from Icons table)", "iconselect"), F("tag_id", "Tag link", "tagref"), F("sort_order", "Sort order", "number")],
-  },
-  {
     name: "alif_tag",
     label: "Icons",
     orderBy: "sort_order",

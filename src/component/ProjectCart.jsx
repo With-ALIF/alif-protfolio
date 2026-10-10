@@ -57,11 +57,17 @@ const ProjectCard = ({ project, study: studyProp, techStack }) => {
           </div>
         )}
 
-        <h2 className="mt-4 text-2xl font-semibold text-white">{project.title}</h2>
-        {summary && <p className="mt-3 flex-1 text-sm leading-6 text-zinc-300">{renderRich(summary)}</p>}
+        {/* Title and summary are clamped to a fixed number of lines so every
+            card in a row keeps the same shape, whatever the project text is. */}
+        <h2 className="mt-4 line-clamp-2 min-h-[3.75rem] text-2xl font-semibold leading-tight text-white">
+          {project.title}
+        </h2>
+        <p className="mt-3 line-clamp-3 min-h-[4.5rem] flex-1 text-sm leading-6 text-zinc-300">
+          {summary ? renderRich(summary) : null}
+        </p>
 
         {stack.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-auto pt-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">Tech Stack</p>
             <div className="mt-2 grid grid-cols-3 gap-1.5">
               {stack.map((t) => (

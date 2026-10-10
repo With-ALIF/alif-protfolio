@@ -271,13 +271,14 @@ export default async function ProjectDetails({ params }) {
                 key={`${item.date}-${item.title}`}
                 className="rounded-lg border border-white/10 bg-black/20 p-4"
               >
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  {/* Phase sits on its own line on mobile, beside the text from sm up. */}
                   <span className="flex h-10 w-fit shrink-0 items-center justify-center rounded-full bg-green-500/15 px-3 text-sm font-semibold text-green-200">
                     {item.date}
                   </span>
-                  <div>
-                    <h3 className="font-semibold text-white">{item.title}</h3>
-                    <p className="mt-2 leading-6 text-zinc-400 [text-wrap:pretty]">{renderRich(item.detail)}</p>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold leading-snug text-white">{item.title}</h3>
+                    <p className="mt-1.5 leading-6 text-zinc-400 [text-wrap:pretty] sm:mt-2">{renderRich(item.detail)}</p>
                   </div>
                 </div>
               </div>

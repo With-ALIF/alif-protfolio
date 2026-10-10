@@ -2,7 +2,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+
+const pad = (n) => String(n).padStart(2, "0");
 
 const EducationSection = ({ items }) => {
   const list = [...(items ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
@@ -46,54 +48,111 @@ const EducationSection = ({ items }) => {
     el.scrollTo({ left: el.scrollLeft + (dir * el.scrollWidth) / list.length, behavior: "smooth" });
   };
 
+  // Counter and progress are based on cards, not pages, so the number always
+  // matches how many entries exist (mobile 1-up shows 01 / 06).
+  const seen = Math.min(page * perView + perView, list.length);
+  const progress = list.length > 0 ? (seen / list.length) * 100 : 0;
+
   return (
     <motion.div
       className="py-12 text-white"
-      initial={{ x: -100, opacity: 0 }}
-      whileInView={{ x: 0, opacity: 1 }}
-      transition={{ duration: 1 }}
-      viewport={{ once: true }}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="mx-auto max-w-6xl rounded-lg border border-white/10 bg-zinc-900/70 p-6 shadow-lg sm:p-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">Learning path</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-normal">Education</h2>
-            <p className="mt-3 max-w-2xl leading-7 text-zinc-400">Formal study and focused technical training that support my full-stack development work.</p>
+      <div className="mx-auto max-w-6xl rounded-lg border border-white/10 bg-zinc-900/70 p-5 shadow-lg sm:p-8">
+        <div className="flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-300 sm:text-sm">
+              Learning path
+            </p>
+            <h2 className="mt-2 text-3xl font-bold tracking-normal sm:text-4xl">Education</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">
+              My academic journey and technical foundation.
+            </p>
           </div>
           <div className="hidden shrink-0 gap-2 sm:flex">
-            <button onClick={() => stepCard(-1)} aria-label="Previous" className="rounded-full border border-white/10 p-2 hover:bg-white/10 disabled:opacity-40" disabled={!canPrev}><ChevronLeft className="h-5 w-5" /></button>
-            <button onClick={() => stepCard(1)} aria-label="Next" className="rounded-full border border-white/10 p-2 hover:bg-white/10 disabled:opacity-40" disabled={!canNext}><ChevronRight className="h-5 w-5" /></button>
+            <button onClick={() => stepCard(-1)} aria-label="Previous" className="rounded-full border border-white/10 p-2 hover:bg-white/10 disabled:opacity-40" disabled={!canPrev}>
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button onClick={() => stepCard(1)} aria-label="Next" className="rounded-full border border-white/10 p-2 hover:bg-white/10 disabled:opacity-40" disabled={!canNext}>
+              <ChevronRight className="h-5 w-5" />
+            </button>
           </div>
         </div>
-        <div ref={trackRef} onScroll={updatePage} className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {list.map((edu) => (
-            <article key={edu.id} className="w-full shrink-0 snap-start px-1 py-1 lg:w-1/2 lg:px-2">
-              <div className="flex h-full flex-col rounded-xl border border-white/10 bg-black/20 p-5 transition hover:border-blue-400/30 hover:bg-white/[0.04]">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border border-blue-400/30 bg-blue-500/15">
+
+        <div
+          ref={trackRef}
+          onScroll={updatePage}
+          className="mt-6 flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {list.map((edu, index) => (
+            <article
+              key={edu.id ?? index}
+              className="w-full shrink-0 snap-start pr-4 last:pr-0 lg:w-1/2 lg:pr-4 lg:[&:nth-child(2n)]:pr-4"
+            >
+              <div className="flex h-full flex-col rounded-xl border border-white/10 bg-black/20 p-5">
+                {/* Institution identity */}
+                <div className="flex items-start gap-3.5">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/95 p-1">
                     {edu.logo ? (
-                      <Image src={edu.logo} alt={`${edu.institute} logo`} width={48} height={48} className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="block h-full w-full rounded-full bg-blue-300/40" />
-                    )}
+                      <Image src={edu.logo} alt={`${edu.institute} logo`} width={48} height={48} className="h-full w-full object-contain" />
+                    ) : null}
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium leading-snug break-words text-blue-200">{edu.institute}</p>
-                    <p className="text-xs text-zinc-500">{edu.district} · {edu.year}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-base font-semibold leading-snug text-blue-300 sm:text-lg">{edu.institute}</p>
+                    {edu.district ? (
+                      <p className="mt-0.5 flex items-center gap-1.5 text-sm text-zinc-400">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        {edu.district}
+                      </p>
+                    ) : null}
+                    {edu.year ? (
+                      <p className="mt-0.5 text-sm tabular-nums text-zinc-400">{edu.year}</p>
+                    ) : null}
                   </div>
                 </div>
-                <h3 className="mt-4 text-xl font-semibold leading-snug">{edu.degree}</h3>
-                <p className="mt-2 text-sm leading-6 text-zinc-300">{edu.description}</p>
-                <span className="mt-4 w-fit rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">{edu.class}</span>
+
+                <hr className="my-4 border-white/10" />
+
+                {/* Degree is the anchor of the card */}
+                <h3 className="text-xl font-bold leading-snug tracking-tight sm:text-2xl">{edu.degree}</h3>
+                {edu.description ? (
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{edu.description}</p>
+                ) : null}
+
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  {edu.class ? (
+                    <span className="rounded-full bg-blue-500/15 px-3 py-1.5 text-sm font-medium text-blue-200">
+                      {edu.class}
+                    </span>
+                  ) : null}
+                </div>
               </div>
             </article>
           ))}
         </div>
-        <div className="mt-5 flex items-center justify-center gap-2">
-          {Array.from({ length: pageCount }).map((_, i) => (
-            <button key={i} onClick={() => goTo(i)} aria-label={`Go to page ${i + 1}`} className={`h-2 rounded-full transition-all ${i === page ? "w-7 bg-blue-400" : "w-2 bg-white/20 hover:bg-white/40"}`} />
-          ))}
+
+        {/* Progress */}
+        <div className="mt-5 flex items-center justify-between text-sm text-zinc-400">
+          <span>Academic Journey</span>
+          <span className="tabular-nums">
+            {pad(seen)} / {pad(list.length)}
+          </span>
+        </div>
+        <div
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={list.length}
+          aria-valuenow={seen}
+          aria-label="Education progress"
+          className="mt-2 h-1 w-full overflow-hidden rounded-full bg-white/10"
+        >
+          <div
+            className="h-full rounded-full bg-blue-400 transition-[width] duration-300 ease-out"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       </div>
     </motion.div>

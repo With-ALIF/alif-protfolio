@@ -3,15 +3,45 @@
 const GUIDE = {
   alif_site_content: {
     title: "Site Content images",
-    rows: [
-      {
-        field: "profile → profileImage",
-        format: "JPG / WebP (PNG accepted, converted to WebP)",
-        ratio: "1 : 1 (square)",
-        size: "Recommended 720 × 720 px · Min 480 × 480 px",
-        note: "Shown as a square card on Home (~170 px) and as a portrait on About (560 × 720, object-cover). Keep the face centered with margin.",
-      },
-    ],
+    // Site content covers several sections, and only some of them have images.
+    sections: {
+      site: [
+        {
+          field: "profile → profileImage",
+          format: "JPG / WebP (PNG accepted, converted to WebP)",
+          ratio: "1 : 1 (square)",
+          size: "Recommended 720 × 720 px · Min 480 × 480 px",
+          note: "Shown as a square card on Home (~170 px) and as a portrait on About (560 × 720, object-cover). Keep the face centered with margin.",
+        },
+      ],
+      hero: [
+        {
+          field: "—",
+          format: "No image field",
+          ratio: "—",
+          size: "—",
+          note: "This section is text-only (headline, value, highlights). No upload needed.",
+        },
+      ],
+      about: [
+        {
+          field: "—",
+          format: "No image field",
+          ratio: "—",
+          size: "—",
+          note: "This section is text-only (paragraphs). No upload needed.",
+        },
+      ],
+      awards: [
+        {
+          field: "awards → image (certificate)",
+          format: "WebP / JPG (PNG accepted, converted to WebP)",
+          ratio: "16 : 10 (landscape)",
+          size: "Recommended 1280 × 800 px · Min 960 × 600 px",
+          note: "Rendered inside a 16:10 box with object-contain, so nothing is ever cropped — but any other ratio leaves empty space around the certificate. Square or portrait certificates: place them centred on a 16:10 canvas with ~50 px margin rather than cropping them.",
+        },
+      ],
+    },
   },
   alif_projects: {
     title: "Projects images",
@@ -87,18 +117,6 @@ const GUIDE = {
       },
     ],
   },
-  alif_tools: {
-    title: "Skills / Tools icons",
-    rows: [
-      {
-        field: "via Icons table (tag link)",
-        format: "PNG with transparency preferred",
-        ratio: "1 : 1 (square)",
-        size: "Recommended 128 × 128 px · Min 64 × 64 px",
-        note: "Tiny badges (~14–24 px, object-contain). Upload square icons only.",
-      },
-    ],
-  },
   alif_tag: {
     title: "Icons images",
     rows: [
@@ -149,8 +167,16 @@ const GUIDE = {
   },
 };
 
-export default function ImageGuide({ activeName }) {
+export default function ImageGuide({ activeName, section }) {
   const guide = GUIDE[activeName];
+  // Site content spans several sections with different image needs, so pick the
+  // rows for the section actually open in the editor.
+  const rows =
+    activeName === "alif_site_content"
+      ? guide?.sections?.[section] ?? guide?.sections?.site ?? []
+      : guide?.rows ?? [];
+  const title =
+    activeName === "alif_site_content" && section ? `${guide?.title} · ${section}` : guide?.title;
 
   return (
     <aside className="rounded-lg border border-white/10 bg-zinc-900/60 p-4">
@@ -162,10 +188,10 @@ export default function ImageGuide({ activeName }) {
         <span className="text-zinc-200">alif-images</span> bucket.
       </p>
 
-      {guide ? (
+      {rows.length > 0 ? (
         <div className="mt-4 space-y-3">
-          <p className="text-sm font-semibold text-blue-300">{guide.title}</p>
-          {guide.rows.map((row) => (
+          <p className="text-sm font-semibold text-blue-300">{title}</p>
+          {rows.map((row) => (
             <div key={row.field} className="rounded-lg border border-white/10 bg-black/20 p-3 text-sm">
               <p className="font-semibold text-white">{row.field}</p>
               <dl className="mt-2 space-y-1.5 text-xs leading-5">

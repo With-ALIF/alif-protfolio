@@ -104,7 +104,6 @@ export async function getCmsBundle() {
     statRows,
     dbRows,
     skillRows,
-    toolRows,
     educationRows,
     experienceRows,
     serviceRows,
@@ -131,7 +130,6 @@ export async function getCmsBundle() {
     fetchTable("portfolio_detail_statistics"),
     fetchTable("portfolio_detail_database", "created_at"),
     fetchTable("portfolio_skills"),
-    fetchTable("portfolio_tools"),
     fetchTable("portfolio_education"),
     fetchTable("portfolio_experience"),
     fetchTable("portfolio_services"),
@@ -338,10 +336,9 @@ export async function getCmsBundle() {
       ...[...grouped.keys()].filter((g) => !order.includes(g)).map((g) => ({ title: g, skills: grouped.get(g) })),
     ];
   }
-  const tools = (toolRows || []).map((r) => ({ name: r.name, icon: resolveIcon(r) }));
-  if (!skillGroups.some((g) => g.title === "Tools") && tools.length > 0) {
-    skillGroups = [...skillGroups, { title: "Tools", skills: tools }];
-  }
+
+  // Tools live in portfolio_skills with group="Tools", so they show up in the
+// grouping below on their own. The old portfolio_tools table is unused.
 
   // --- education / experience / services ---
   const education = (educationRows || [])
