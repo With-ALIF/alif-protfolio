@@ -44,6 +44,9 @@ export const metadata = {
       "Full Stack Software Engineer building responsive, accessible, and production-ready MERN and Next.js applications.",
   },
   manifest: "/site.webmanifest",
+  verification: {
+    google: "j1fBRN3Flk5eKnQu8mRrJp8AmBoDyQsE5yXrA-Au3aU",
+  },
   icons: {
     // Declared explicitly instead of via app-directory file conventions
     // (src/app/icon.*), because defining `icons` at all makes Next drop the
