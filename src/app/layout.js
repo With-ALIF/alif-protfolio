@@ -4,6 +4,10 @@ import "./globals.css";
 import SiteChrome from "./components/shared/SiteChrome";
 import { getSiteSection } from "@/lib/cms";
 
+// Bump whenever the favicon/apple-icon artwork changes, to invalidate caches
+// that are keyed by the icon URL rather than the file contents.
+const ICON_VERSION = 2;
+
 export const metadata = {
   metadataBase: new URL("https://alif.mnr.bd"),
   title: {
@@ -58,13 +62,18 @@ export const metadata = {
     // last-resort raster. Every entry renders the same artwork, so the
     // winner is cosmetic. `shortcut` re-declares the ICO under the legacy
     // rel name that older engines and some crawlers match on.
+    //
+    // ICON_VERSION is a cache-buster. Google keys its favicon cache on the
+    // icon URL, so replacing the file at the same URL can leave it serving the
+    // old artwork for weeks. Bump this whenever the icon artwork changes and
+    // the link href becomes a brand-new URL that must be fetched again.
     icon: [
-      { url: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
-      { url: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: `/favicon.ico?v=${ICON_VERSION}`, type: "image/x-icon", sizes: "16x16 32x32 48x48" },
+      { url: `/favicon.svg?v=${ICON_VERSION}`, type: "image/svg+xml", sizes: "any" },
+      { url: `/icon.png?v=${ICON_VERSION}`, type: "image/png", sizes: "512x512" },
     ],
-    shortcut: [{ url: "/favicon.ico", type: "image/x-icon", sizes: "16x16 32x32 48x48" }],
-    apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
+    shortcut: [{ url: `/favicon.ico?v=${ICON_VERSION}`, type: "image/x-icon", sizes: "16x16 32x32 48x48" }],
+    apple: [{ url: `/apple-icon.png?v=${ICON_VERSION}`, type: "image/png", sizes: "180x180" }],
   },
 };
 
