@@ -12,6 +12,7 @@ import Skills from "../Skills/Skills";
 import Projects from "../Projects/Projects";
 import Services from "../Services/Services";
 import Contact from "../contact/Contact";
+import GitHubStatsPreview from "../GitHub/GitHubStatsPreview";
 
 const reveal = {
   initial: { opacity: 0, y: 40 },
@@ -26,11 +27,11 @@ const Reveal = ({ children, className = "" }) => (
   </motion.div>
 );
 
-export default function Landing({ cms }) {
+export default function Landing({ cms, githubStats }) {
   const d = cms || {};
 
   return (
-    <div className="space-y-20 text-white sm:space-y-28">
+    <div className="space-y-16 text-white sm:space-y-20">
       <section id="home" className="scroll-mt-24 pt-10 sm:pt-14">
         <Home profile={d.site?.profile} hero={d.hero} />
       </section>
@@ -52,9 +53,13 @@ export default function Landing({ cms }) {
 
       <section id="experience" className="scroll-mt-24">
         <Reveal>
-          <ExperienceSummary highlights={d.hero?.highlights} />
+          <ExperienceSummary highlights={d.hero?.highlights} githubStats={githubStats} />
         </Reveal>
         <ExperienceSection items={d.experience} />
+      </section>
+
+      <section id="github" className="scroll-mt-24">
+        <GitHubStatsPreview data={githubStats} />
       </section>
 
       <section id="journey" className="scroll-mt-24">

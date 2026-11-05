@@ -100,13 +100,12 @@ const Navbar = ({ children, profile = {}, nav = [] }) => {
 
           <div className="hidden shrink-0 items-center gap-2 xl:flex">
             <a
-              href={profile.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/api/resume"
+              download
               className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-400"
             >
               <Download className="h-4 w-4" />
-              Resume
+              Download CV
             </a>
           </div>
 
@@ -142,12 +141,12 @@ const Navbar = ({ children, profile = {}, nav = [] }) => {
               );
             })}
             <a
-              href={profile.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/api/resume"
+              download
+              onClick={() => setIsOpen(false)}
               className="block w-full rounded-full bg-blue-500 px-4 py-2 text-center font-semibold hover:bg-blue-400"
             >
-              Download Resume
+              Download CV
             </a>
           </div>
         )}

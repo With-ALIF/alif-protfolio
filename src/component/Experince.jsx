@@ -6,7 +6,7 @@ const ExperienceSection = ({ items }) => {
   const list = [...(items ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <div className="py-12 text-white">
+    <div className="pt-12 text-white">
       <div className="mx-auto max-w-4xl rounded-lg border border-white/10 bg-zinc-900/70 p-6 shadow-lg sm:p-8">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">

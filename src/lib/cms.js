@@ -396,3 +396,15 @@ export async function getSiteSection() {
   const bundle = await getCmsBundle();
   return bundle.site;
 }
+
+// Small, single-table lookup for the public resume download route.
+export async function getResumeInfo() {
+  const rows = await fetchTable("portfolio_profiles", "created_at");
+  const profile = rows?.[0];
+
+  return {
+    url: String(profile?.resume_url ?? "").trim(),
+    name: String(profile?.name ?? "").trim(),
+    handle: String(profile?.handle ?? "").trim(),
+  };
+}

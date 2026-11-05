@@ -13,6 +13,20 @@ const initialForm = {
   message: "",
 };
 
+async function sendTelegramContact(payload) {
+  const response = await fetch("/api/contact", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok || !result?.ok) {
+    throw new Error(result?.error || "Telegram delivery failed.");
+  }
+}
+
 export default function ContactForm({ profile = { socials: {} } }) {
   const [formData, setFormData] = useState(initialForm);
   const [status, setStatus] = useState({ type: "", message: "" });
@@ -48,7 +62,14 @@ export default function ContactForm({ profile = { socials: {} } }) {
     setStatus({ type: "", message: "" });
 
     try {
-      await sendContactEmail(formData);
+      const results = await Promise.allSettled([
+        sendTelegramContact(formData),
+        sendContactEmail(formData),
+      ]);
+
+      if (results.every((result) => result.status === "rejected")) {
+        throw new Error("All delivery channels failed.");
+      }
 
       setFormData(initialForm);
       setStatus({
@@ -131,6 +152,7 @@ export default function ContactForm({ profile = { socials: {} } }) {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  maxLength={100}
                   className="mt-2 w-full rounded-lg border border-white/10 bg-black/30 p-3 text-white outline-none focus:border-blue-400"
                   autoComplete="name"
                   required
@@ -143,6 +165,7 @@ export default function ContactForm({ profile = { socials: {} } }) {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  maxLength={200}
                   className="mt-2 w-full rounded-lg border border-white/10 bg-black/30 p-3 text-white outline-none focus:border-blue-400"
                   autoComplete="email"
                   required
@@ -156,6 +179,7 @@ export default function ContactForm({ profile = { socials: {} } }) {
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
+                maxLength={200}
                 className="mt-2 w-full rounded-lg border border-white/10 bg-black/30 p-3 text-white outline-none focus:border-blue-400"
                 required
               />
@@ -167,6 +191,8 @@ export default function ContactForm({ profile = { socials: {} } }) {
                 value={formData.message}
                 onChange={handleChange}
                 rows="6"
+                minLength={10}
+                maxLength={3500}
                 className="mt-2 w-full rounded-lg border border-white/10 bg-black/30 p-3 text-white outline-none focus:border-blue-400"
                 required
               />

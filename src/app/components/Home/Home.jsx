@@ -49,12 +49,11 @@ export default function Home({ profile = { socials: {} }, hero = {} }) {
               View Projects <ArrowRight className="h-4 w-4" />
             </a>
             <a
-              href={profile.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/api/resume"
+              download
               className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
             >
-              Download Resume <Download className="h-4 w-4" />
+              Download CV <Download className="h-4 w-4" />
             </a>
             <a
               href="#contact"

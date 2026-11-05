@@ -2,6 +2,7 @@ import Image from "next/image";
 import { AlertTriangle, ArrowLeft, Boxes, ChevronRight, Database, ExternalLink, Github, History, Images, Layers, LayoutDashboard, Lightbulb, Link2, ListChecks } from "lucide-react";
 import { getCmsBundle } from "@/lib/cms";
 import { renderRich } from "@/lib/richText";
+import ProjectStatistics from "@/component/ProjectStatistics";
 
 export const dynamic = "force-dynamic";
 
@@ -162,17 +163,7 @@ export default async function ProjectDetails({ params }) {
       )}
 
       {statisticsEntries.length > 0 && (
-        <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {statisticsEntries.map(([label, value]) => (
-            <div
-              key={label}
-              className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-center"
-            >
-              <p className="text-2xl font-bold text-blue-200">{value}</p>
-              <p className="mt-1 text-sm text-zinc-400">{label}</p>
-            </div>
-          ))}
-        </section>
+        <ProjectStatistics entries={statisticsEntries} />
       )}
 
       {features.length > 0 && (

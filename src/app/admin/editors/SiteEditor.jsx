@@ -3,6 +3,7 @@
 import { navToText, textToNav } from "../format/site";
 import { boxCls, hintCls, inputCls } from "../format/ui";
 import ImageInput from "../components/ImageInput";
+import ResumeInput from "../components/ResumeInput";
 
 const PROFILE_FIELDS = [
   ["name", "Name"],
@@ -26,12 +27,19 @@ export default function SiteEditor({ data, onChange }) {
   return (
     <div className="space-y-3">
       <p className={hintCls}>Normal text — no JSON needed. Nav: <code>Home | #home</code></p>
-      {PROFILE_FIELDS.map(([k, label]) => (
-        <label key={k} className="block">
-          <span className="text-sm font-medium text-zinc-300">{label}</span>
-          <input value={p[k] || ""} onChange={(e) => setProfile({ [k]: e.target.value })} className={inputCls} />
-        </label>
-      ))}
+      {PROFILE_FIELDS.map(([k, label]) =>
+        k === "resumeUrl" ? (
+          <div key={k} className="block">
+            <span className="text-sm font-medium text-zinc-300">{label}</span>
+            <ResumeInput value={p[k] || ""} onChange={(url) => setProfile({ [k]: url })} />
+          </div>
+        ) : (
+          <label key={k} className="block">
+            <span className="text-sm font-medium text-zinc-300">{label}</span>
+            <input value={p[k] || ""} onChange={(e) => setProfile({ [k]: e.target.value })} className={inputCls} />
+          </label>
+        )
+      )}
       <label className="block">
         <span className="text-sm font-medium text-zinc-300">Short value / bio</span>
         <textarea value={p.value || ""} onChange={(e) => setProfile({ value: e.target.value })} rows={3} className={inputCls} />
