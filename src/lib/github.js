@@ -7,7 +7,8 @@ import { unstable_cache } from "next/cache";
 
 const API = "https://api.github.com";
 const GRAPHQL_API = "https://api.github.com/graphql";
-const REVALIDATE_SECONDS = 60 * 60 * 24; // refresh once a day
+const CACHE_TTL_SECONDS = 5 * 60; // refresh every 5 minutes
+const CACHE_BUCKET_MS = CACHE_TTL_SECONDS * 1000;
 const MAX_REPO_PAGES = 5;
 const DEFAULT_USERNAME = "With-ALIF";
 
@@ -55,12 +56,12 @@ function rateLimitFrom(response) {
   };
 }
 
-async function githubFetch(url, { token, allowAnonymousRetry = true, revalidate = REVALIDATE_SECONDS } = {}) {
+async function githubFetch(url, { token, allowAnonymousRetry = true } = {}) {
   let response;
   try {
     response = await fetch(url, {
       headers: authHeaders(token),
-      next: { revalidate },
+      cache: "no-store",
     });
   } catch {
     throw new GitHubApiError("network", "GitHub could not be reached right now.");
@@ -68,7 +69,7 @@ async function githubFetch(url, { token, allowAnonymousRetry = true, revalidate 
 
   // A stale or revoked token should not take the public profile down with it.
   if (response.status === 401 && token && allowAnonymousRetry) {
-    return githubFetch(url, { token: null, allowAnonymousRetry: false, revalidate });
+    return githubFetch(url, { token: null, allowAnonymousRetry: false });
   }
 
   if (!response.ok) {
@@ -312,7 +313,7 @@ async function fetchContributionsGraphQL(username, token, createdAtValue) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query, variables }),
-      next: { revalidate: REVALIDATE_SECONDS },
+      cache: "no-store",
     });
   } catch {
     throw new GitHubApiError("network", "GitHub could not be reached right now.");
@@ -379,7 +380,7 @@ async function fetchContributionsFromHtml(username) {
       Accept: "text/html",
       "User-Agent": "Mozilla/5.0 (compatible; alif-portfolio)",
     },
-    next: { revalidate: REVALIDATE_SECONDS },
+    cache: "no-store",
   }).catch(() => null);
 
   if (!response?.ok) {
@@ -546,6 +547,27 @@ async function loadGitHubStats() {
   };
 }
 
-export const getGitHubStats = unstable_cache(loadGitHubStats, ["github-home-stats-v3"], {
-  revalidate: 86400,
-});
+// unstable_cache is stale-while-revalidate: the request that discovers an
+// expired entry receives the old value while the refresh happens in the
+// background. Putting the current five-minute bucket in the cache key makes
+// the first request of each bucket a hard miss, so it waits for fresh data
+// instead of showing the previous snapshot once.
+const getCachedGitHubStats = unstable_cache(
+  async () => loadGitHubStats(),
+  ["github-home-stats-v5"],
+  { revalidate: CACHE_TTL_SECONDS }
+);
+
+const inFlightStats = new Map();
+
+export async function getGitHubStats() {
+  const bucket = String(Math.floor(Date.now() / CACHE_BUCKET_MS));
+
+  if (inFlightStats.has(bucket)) return inFlightStats.get(bucket);
+
+  const request = getCachedGitHubStats(bucket).finally(() => {
+    inFlightStats.delete(bucket);
+  });
+  inFlightStats.set(bucket, request);
+  return request;
+}
