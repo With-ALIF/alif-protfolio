@@ -2,8 +2,6 @@ import { getSupabase } from "@/lib/supabase";
 import { loadProjectOptions, loadProjects } from "./store/projects";
 import { loadDetails, saveDetail } from "./store/details";
 
-// After a project is saved, mirror card fields into its details row
-// so the details page (/projects/[slug]) stays in sync automatically.
 export async function saveProjectAndSync(s, activeName) {
   if (activeName !== "alif_projects") {
     await s.handleSave();
@@ -24,8 +22,6 @@ export async function saveProjectAndSync(s, activeName) {
     const { data: details, error } = await loadDetails(sb, "slug");
     if (error) throw error;
     const match = (details || []).find((d) => d.project_id === pid);
-    // Details' Short description is read-only in the admin, so it is always
-    // (re)synced from the project's description.
     const summary = snapshot.description || "";
     const card = {
       title: snapshot.title || "",
@@ -59,7 +55,6 @@ export async function saveProjectAndSync(s, activeName) {
   }
 }
 
-// One-time backfill: copy card fields of ALL projects into matching details rows.
 export async function syncAllProjectsToDetails(s) {
   const sb = getSupabase();
   if (!sb) return;

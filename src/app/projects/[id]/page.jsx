@@ -16,9 +16,6 @@ const Section = ({ icon: Icon, title, children }) => (
   </section>
 );
 
-// Category accent colours. Assigned from the category NAME, so the same
-// category always gets the same colour on every project and no colour or
-// category name is hardcoded anywhere.
 const TONES = [
   { text: "text-sky-300", edge: "border-sky-400/70" },
   { text: "text-emerald-300", edge: "border-emerald-400/70" },
@@ -183,8 +180,6 @@ export default async function ProjectDetails({ params }) {
 
       {techCategories.length > 0 && (
         <Section icon={Layers} title="Technology Stack">
-          {/* Stacked on mobile, side-by-side columns from lg up. A grid (not CSS
-              columns) keeps the admin-defined category order intact. */}
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {techCategories.map((group, gi) => {
               const chips = (group.technologies || []).filter((t) => t.name);
@@ -208,7 +203,6 @@ export default async function ProjectDetails({ params }) {
                         className="group/tech inline-flex min-w-0 max-w-full items-center gap-2 rounded-md border border-white/10 bg-black/30 px-2.5 py-1.5 text-sm font-medium text-zinc-200 transition duration-200 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.06] hover:shadow-md hover:shadow-black/40"
                       >
                         {tech.icon ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={tech.icon}
                             alt=""
@@ -263,7 +257,6 @@ export default async function ProjectDetails({ params }) {
                 className="rounded-lg border border-white/10 bg-black/20 p-4"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-                  {/* Phase sits on its own line on mobile, beside the text from sm up. */}
                   <span className="flex h-10 w-fit shrink-0 items-center justify-center rounded-full bg-green-500/15 px-3 text-sm font-semibold text-green-200">
                     {item.date}
                   </span>

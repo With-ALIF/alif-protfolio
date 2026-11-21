@@ -19,7 +19,6 @@ export default function SiteContentEditor({ section, data, onChange }) {
           try {
             onChange(JSON.parse(e.target.value));
           } catch {
-            /* ignore while typing */
           }
         }}
         rows={8}

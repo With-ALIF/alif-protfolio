@@ -78,7 +78,6 @@ export function useAdminTable(table, activeName) {
       if (key === "section" && activeName === "alif_site_content")
         return { ...f, section: value, data: normalizeSiteData(value, f.data) };
       if (key === "title" && (activeName === "alif_project_details" || activeName === "alif_projects")) {
-        // Slug follows the title automatically unless it was already customized.
         const current = f.slug || "";
         const follow = !current || current === slugify(f.title || "");
         return { ...f, title: value, ...(follow ? { slug: slugify(value) } : {}) };
@@ -102,8 +101,6 @@ export function useAdminTable(table, activeName) {
       const q = isNew ? await insertRow(sb, activeName, payload) : await updateRow(sb, activeName, editing.id, payload);
       if (q.error) throw q.error;
       let msg = isNew ? "Added." : "Saved.";
-      // The Icons table owns icon URLs: a changed URL is pushed into every
-      // other table that copied it (skills, tools, technologies, database info).
       if (activeName === "alif_tag" && !isNew && editing) {
         const c = await cascadeIconUrl(sb, editing.icon, payload.icon);
         if (c.error) throw c.error;

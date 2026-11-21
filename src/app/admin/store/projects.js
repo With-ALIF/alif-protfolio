@@ -1,4 +1,3 @@
-// Virtual alif_projects rows <-> portfolio_projects + tag junction.
 import { replaceProjectTags, tagsByProject } from "./tags";
 
 const COLS = ["title", "slug", "description", "image", "github", "demo", "featured", "is_published", "show_github", "sort_order"];
@@ -32,7 +31,6 @@ export async function saveProject(sb, id, payload) {
 }
 
 export async function removeProject(sb, id) {
-  // FK cascades remove details + tag links.
   return sb.from("portfolio_projects").delete().eq("id", id);
 }
 

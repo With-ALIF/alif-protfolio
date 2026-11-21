@@ -1,5 +1,3 @@
-// Virtual alif_* tables backed by portfolio_* tables.
-// UI code keeps the exact old shapes; only this store touches Supabase.
 import { loadSiteRows, saveSiteSection } from "./site";
 import { loadProjects, saveProject, removeProject, loadProjectOptions } from "./projects";
 import { loadDetails, saveDetail, removeDetail } from "./details";
@@ -24,8 +22,6 @@ export function loadRows(sb, name, orderBy) {
   return { data: [], error: new Error(`Unknown table: ${name}`) };
 }
 
-// Drops tag_id from the payload when the column hasn't been migrated yet,
-// so saves keep working before/after the migration in any order.
 async function withoutTagId(sb, table, payload) {
   if (!payload || !("tag_id" in payload)) return payload;
   if (await supportsTagId(sb, table)) return payload;
@@ -53,18 +49,15 @@ export async function deleteRow(sb, name, row) {
   if (DIRECT[name]) return sb.from(DIRECT[name]).delete().eq("id", row.id);
   if (name === "alif_projects") return removeProject(sb, row.id);
   if (name === "alif_project_details") return removeDetail(sb, row.id);
-  return { error: null }; // site sections are protected in UI
+  return { error: null };
 }
 
-// Tables that keep their own copy of a tag icon URL.
-// NOTE: portfolio_detail_database has no `id` column (keyed by detail_id).
 const ICON_REFS = [
   { table: "portfolio_skills", key: "id" },
   { table: "portfolio_detail_technologies", key: "id" },
   { table: "portfolio_detail_database", key: "detail_id" },
 ];
 
-// Push a changed Icons-table URL into every copy. Returns updated row count.
 export async function cascadeIconUrl(sb, oldUrl, newUrl) {
   const from = String(oldUrl || "").trim();
   const to = String(newUrl || "").trim();

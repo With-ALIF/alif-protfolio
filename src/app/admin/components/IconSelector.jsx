@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import { hintCls, inputCls } from "../format/ui";
 
-// Skill icon picker: dropdown of the Icons table. Stored value = icon URL.
-// Picking an icon also syncs the skill Name + tag_id (UUID link to the tag row).
 export default function IconSelector({ value, tagId, onPick, onPickTagId }) {
   const [tags, setTags] = useState([]);
 
@@ -18,12 +16,10 @@ export default function IconSelector({ value, tagId, onPick, onPickTagId }) {
     })();
   }, []);
 
-  // Prefer the UUID link; fall back to matching the stored URL (legacy rows).
   const current = tags.find((t) => t.id === tagId) || tags.find((t) => t.icon === value);
   const custom = value && !current ? value : "";
   const preview = current?.icon || value || "";
 
-  // Heal the link: adopt the matching tag, or drop it when the tag is gone.
   useEffect(() => {
     if (tags.length === 0) return;
     if (tagId) {
@@ -50,7 +46,6 @@ export default function IconSelector({ value, tagId, onPick, onPickTagId }) {
         {custom ? <option value={custom} className="bg-zinc-900 text-white">(custom) {String(custom).slice(0, 40)}</option> : null}
       </select>
       {preview ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img src={preview} alt="icon preview" className="mt-2 h-10 w-10 rounded object-contain border border-white/10 bg-black/30 p-1" />
       ) : null}
     </div>

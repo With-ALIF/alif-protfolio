@@ -1,4 +1,3 @@
-// Tag junction helpers: portfolio_project_tags <-> portfolio_tags.
 export async function ensureTagIds(sb, names) {
   const clean = [...new Set((names || []).map((n) => String(n || "").trim()).filter(Boolean))];
   if (clean.length === 0) return { ids: [], error: null };
@@ -35,16 +34,11 @@ export async function tagsByProject(sb) {
   return { map, error: null };
 }
 
-// Probes (once per table per session) whether the tag_id FK column exists.
-// Lets the admin keep working before the migration below has been applied:
-//   alter table X add column tag_id uuid references portfolio_tags(id) on delete set null;
 const tagIdSupport = {};
 export async function supportsTagId(sb, table) {
   if (tagIdSupport[table] !== undefined) return tagIdSupport[table];
   try {
     const r = await sb.from(table).select("tag_id").limit(1);
-    // Only a missing-column error means "migration not applied yet".
-    // Any other error (network, RLS) must NOT be masked: assume supported.
     tagIdSupport[table] = !r.error || !String(r.error.message || "").includes("tag_id");
   } catch {
     tagIdSupport[table] = true;
@@ -52,16 +46,12 @@ export async function supportsTagId(sb, table) {
   return tagIdSupport[table];
 }
 
-// Same idea for the Technology Stack category grouping, which is optional
-// until supabase/migrations/20260101_add_tech_categories.sql has been run.
-// Without it the admin still loads/saves a flat technology list.
 const techGroupSupport = {};
 export async function supportsTechGroups(sb) {
   if (techGroupSupport.value !== undefined) return techGroupSupport.value;
   try {
     const cat = await sb.from("portfolio_tech_categories").select("id").limit(1);
     const col = await sb.from("portfolio_detail_technologies").select("category_id").limit(1);
-    // Only "relation/column does not exist" means "migration not applied yet".
     const missing = (e) => !!e && /does not exist|not found|schema cache/i.test(String(e.message || ""));
     techGroupSupport.value = !missing(cat.error) && !missing(col.error);
   } catch {

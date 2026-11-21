@@ -18,7 +18,6 @@ export default function AdminPanel({ user }) {
   const table = TABLES.find((t) => t.name === activeName);
   const s = useAdminTable(table, activeName);
 
-  // Core sections + education can never be deleted (any case).
   const canDelete = (row) => {
     if (activeName === "alif_site_content" && ["site", "hero", "about", "awards"].includes(row.section)) return false;
     if (activeName === "alif_education") return false;

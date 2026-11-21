@@ -9,8 +9,6 @@ const bodies = (rows) => (rows || []).map((r) => r.body || "");
 const CHILD_TABLES = ["technologies", "features", "gallery", "timeline", "challenges", "solutions", "statistics"];
 const TECH_CATEGORIES = "portfolio_tech_categories";
 
-// One request per child table covering ALL details rows, in parallel.
-// The previous per-row version cost 1 + 8N serial round trips.
 async function childrenByDetail(sb, ids, grouped) {
   const requests = [
     ...CHILD_TABLES.map((t) =>
@@ -18,8 +16,6 @@ async function childrenByDetail(sb, ids, grouped) {
     ),
     sb.from("portfolio_detail_database").select("*").in("detail_id", ids),
   ];
-  // The global category list is only fetched once the migration exists; a
-  // missing table must not take the whole Project Details list down with it.
   if (grouped)
     requests.push(sb.from(TECH_CATEGORIES).select("id,name,sort_order").order("sort_order", { ascending: true }));
   const results = await Promise.all(requests);
@@ -50,7 +46,6 @@ export async function loadDetails(sb, orderBy) {
   ]);
   if (d.error) return { data: null, error: d.error };
   if (t.error) return { data: null, error: t.error };
-  // Live tag icons: admin previews follow tag URL changes immediately.
   const live = {};
   if (!g.error) for (const r of g.data || []) if (r.id) live[r.id] = r.icon || "";
   const parents = d.data || [];
@@ -68,9 +63,6 @@ export async function loadDetails(sb, orderBy) {
     for (const s of by.statistics[r.id] || []) if (s.label) stats[s.label] = s.value ?? "";
     const db = dbBy[r.id];
     const techRows = by.technologies[r.id] || [];
-    // Categories are global: every category is listed, and the ones this
-    // project actually uses carry its technologies. Uncategorized rows land in
-    // a trailing unnamed group so nothing is hidden until an admin files it.
     const categories = (c.out.techCategories || []).map((cat) => ({
       id: cat.id,
       name: cat.name || "",
@@ -131,9 +123,6 @@ async function replaceChildren(sb, did, payload) {
     if (r.error) return r;
   }
 
-  // Technology Stack: categories first so technologies can point at them.
-  // When the grouping migration is not applied yet, the flat list is written
-  // to the same place as before so nothing is lost.
   if (grouped) {
     const techStep = await replaceTechStack(sb, did, payload?.tech_categories, techTagOk);
     if (techStep.error) return techStep;
@@ -175,17 +164,12 @@ async function replaceChildren(sb, did, payload) {
   return { error: null };
 }
 
-// Replaces the technologies of one project, pointing each row at an existing
-// global category by UUID. The categories table itself is never written here:
-// it is owned by the "Tech Categories" admin section, so a project save can
-// never create, rename, reorder or delete a shared category.
 async function replaceTechStack(sb, did, groups, techTagOk) {
   const del = await sb.from("portfolio_detail_technologies").delete().eq("detail_id", did);
   if (del.error) return del;
 
   const rows = [];
   for (const g of arr(groups)) {
-    // A null id is the "uncategorised" bucket the loader produces.
     const categoryId = g?.id || null;
     arr(g?.technologies).forEach((t, i) => {
       rows.push({
@@ -225,6 +209,5 @@ export async function saveDetail(sb, id, payload) {
 }
 
 export async function removeDetail(sb, id) {
-  // FK cascades remove child rows.
   return sb.from("portfolio_project_details").delete().eq("id", id);
 }

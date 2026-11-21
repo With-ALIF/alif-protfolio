@@ -12,7 +12,6 @@ export function StatusBanner({ error, notice }) {
   );
 }
 
-// Which row values a query is matched against.
 function haystack(table, row) {
   return [table.listBy(row), row.name, row.title, row.slug, row.icon, row.description, row.website, row.url]
     .filter(Boolean)
@@ -78,7 +77,6 @@ export default function RowList({ table, rows, loading, editing, onEdit, onDelet
               >
                 <button onClick={() => onEdit(row)} className="flex min-w-0 flex-1 items-center gap-3 text-left leading-6 hover:text-white">
                   {thumb ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={thumb} alt="" className="h-7 w-7 shrink-0 rounded object-contain" />
                   ) : null}
                   <span className="min-w-0 break-words line-clamp-3">{table.listBy(row)}</span>

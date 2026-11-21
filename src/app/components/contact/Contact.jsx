@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaEnvelope, FaMapMarkerAlt, FaLinkedin, FaGithub, FaFacebook, FaTelegram, FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { FaEnvelope, FaMapMarkerAlt, FaLinkedin, FaGithub, FaFacebook, FaTelegram, FaYoutube, FaWhatsapp, FaInstagram } from "react-icons/fa";
 import { useState } from "react";
 import { sendContactEmail } from "@/lib/emailjs";
 
@@ -127,6 +127,9 @@ export default function ContactForm({ profile = { socials: {} } }) {
             </Link>
             <Link aria-label="Telegram profile" href={profile.socials.telegram} target="_blank" className="rounded-full border border-white/10 p-3 hover:bg-white/10">
               <FaTelegram className="text-2xl" />
+            </Link>
+            <Link aria-label="YouTube channel" href={profile.socials.youtube} target="_blank" className="rounded-full border border-white/10 p-3 hover:bg-white/10">
+              <FaYoutube className="text-2xl" />
             </Link>
             <Link aria-label="WhatsApp profile" href={profile.socials.whatsapp} target="_blank" className="rounded-full border border-white/10 p-3 hover:bg-white/10">
               <FaWhatsapp className="text-2xl" />

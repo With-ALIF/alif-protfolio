@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import { hintCls } from "../format/ui";
 
-// Multi-select tags from the Icons table. Value = array of tag names.
 export default function TagSelector({ value, onChange }) {
   const [tags, setTags] = useState([]);
   const selected = Array.isArray(value) ? value : [];
@@ -37,7 +36,6 @@ export default function TagSelector({ value, onChange }) {
               }`}
             >
               {t.icon ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={t.icon} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="h-4 w-4 object-contain" />
               ) : null}
               {t.name}

@@ -1,6 +1,3 @@
-// EmailJS configuration for the contact form.
-// NOTE: the public key, service ID and template ID are safe to ship to the
-// client — EmailJS authenticates browser sends with the public key by design.
 import emailjs from "@emailjs/browser";
 
 export const CONFIG = {
@@ -11,7 +8,6 @@ export const CONFIG = {
   },
 };
 
-// Sends the contact message from the browser via EmailJS.
 export async function sendContactEmail({ name, email, subject, message }) {
   const response = await emailjs.send(
     CONFIG.emailjs.SERVICE_ID,

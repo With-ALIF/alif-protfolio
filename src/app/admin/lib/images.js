@@ -51,7 +51,6 @@ export async function compressTo100KB(file) {
       quality = 0.8;
     }
   }
-  // last try: return whatever we have
   canvas.width = w;
   canvas.height = h;
   ctx.drawImage(img, 0, 0, w, h);

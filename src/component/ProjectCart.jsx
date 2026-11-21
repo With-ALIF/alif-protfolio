@@ -5,10 +5,6 @@ import Link from "next/link";
 import { ArrowRight, Github, Globe } from "lucide-react";
 import { renderRich } from "@/lib/richText";
 
-// The project card is a summary, so it only surfaces the core stack. A chip
-// qualifies when its category name contains one of these words (case and
-// spacing insensitive), so "Frontend", "Backend Services" and "Programming
-// Language" all match. Everything else stays on the project's detail page.
 const CARD_CATEGORY_KEYWORDS = ["frontend", "backend", "language"];
 
 const onCard = (tech) => {
@@ -57,8 +53,6 @@ const ProjectCard = ({ project, study: studyProp, techStack }) => {
           </div>
         )}
 
-        {/* Title and summary are clamped to a fixed number of lines so every
-            card in a row keeps the same shape, whatever the project text is. */}
         <h2 className="mt-4 line-clamp-2 min-h-[3.75rem] text-2xl font-semibold leading-tight text-white">
           {project.title}
         </h2>
@@ -76,7 +70,6 @@ const ProjectCard = ({ project, study: studyProp, techStack }) => {
                   className="flex min-w-0 items-center justify-center gap-1 rounded-md border border-white/10 bg-black/20 px-1.5 py-1.5 text-xs text-zinc-300"
                 >
                   {t.icon ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={t.icon} alt="" width={14} height={14} loading="lazy" className="h-3.5 w-3.5 shrink-0 object-contain" />
                   ) : null}
                   <span className="truncate">{t.name}</span>

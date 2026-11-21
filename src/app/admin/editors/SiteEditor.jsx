@@ -15,7 +15,7 @@ const PROFILE_FIELDS = [
   ["resumeUrl", "Resume URL"],
 ];
 
-const SOCIALS = ["github", "linkedin", "facebook", "telegram", "whatsapp", "instagram"];
+const SOCIALS = ["github", "linkedin", "facebook", "telegram", "whatsapp", "instagram", "youtube"];
 
 export default function SiteEditor({ data, onChange }) {
   const set = (patch) => onChange({ ...data, ...patch });

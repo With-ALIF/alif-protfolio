@@ -37,7 +37,6 @@ export default function Journey({ items }) {
         </div>
       </div>
 
-      {/* Mobile: vertical timeline (top to bottom) */}
       <div className="relative mx-auto w-full max-w-3xl space-y-6 before:absolute before:bottom-3 before:left-7 before:top-3 before:w-0.5 before:bg-blue-400/60 md:hidden">
         {list.map((milestone) => (
           <div key={milestone.label} className="relative flex items-start gap-4">
@@ -49,7 +48,6 @@ export default function Journey({ items }) {
         ))}
       </div>
 
-      {/* Desktop: horizontal timeline (left to right) */}
       <div className="relative mx-auto hidden w-full max-w-5xl md:block">
         <div className="relative flex gap-6">
           <div

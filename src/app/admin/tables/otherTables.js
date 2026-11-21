@@ -2,8 +2,6 @@ import { F } from "./base";
 
 export const otherTables = [
   {
-    // Global Technology Stack categories. Created and ordered here, then
-    // referenced by UUID from each project's technologies.
     name: "alif_tech_categories",
     label: "Tech Categories",
     orderBy: "sort_order",

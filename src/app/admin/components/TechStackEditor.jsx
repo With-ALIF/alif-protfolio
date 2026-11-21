@@ -1,13 +1,5 @@
 "use client";
 
-// Per-project Technology Stack editor. Categories are NOT created here — they
-// live in the global portfolio_tech_categories table and are managed from the
-// admin's "Tech Categories" section. Each technology is assigned to one of
-// those categories by its UUID (category_id).
-//
-// Value shape (owned by the parent form, persisted by the details store):
-//   [{ id: <category uuid>, name: <label for display>, technologies: [{ name, icon, tag_id }] }]
-
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import { supportsTechGroups } from "../store/tags";
@@ -25,7 +17,6 @@ export default function TechStackEditor({ value, onChange }) {
   const [picks, setPicks] = useState({});
   const [customs, setCustoms] = useState({});
 
-  // The parent form owns the value; mirror it in without looping.
   useEffect(() => {
     setGroups(Array.isArray(value) ? value : []);
   }, [value]);
@@ -42,8 +33,6 @@ export default function TechStackEditor({ value, onChange }) {
           ? sb.from(CATEGORIES_TABLE).select("id,name,sort_order").order("sort_order", { ascending: true })
           : Promise.resolve({ data: [] }),
       ]);
-      // Alphabetical, case-insensitive, so the dropdown reads a -> z instead of
-      // Icons-table sort_order. Categories keep their own sort_order.
       if (tagRes.data)
         setTags(
           tagRes.data
@@ -54,8 +43,6 @@ export default function TechStackEditor({ value, onChange }) {
     })();
   }, []);
 
-  // Categories cannot be assigned until the migration is applied. Say so
-  // rather than accepting edits that would be dropped on save.
   if (grouped === false) {
     return (
       <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-200">
@@ -76,8 +63,6 @@ export default function TechStackEditor({ value, onChange }) {
     emit(groups.map((g, i) => (i === gi ? { ...g, technologies: techs } : g)));
   };
 
-  // Keeps only groups that still hold at least one technology, so the store
-  // never writes an empty category back out.
   const emitGroups = (next) => emit(next.filter((g) => (g.technologies || []).length > 0));
 
   const addTo = (catId, tech) => {
@@ -109,8 +94,6 @@ export default function TechStackEditor({ value, onChange }) {
     setTechnologies(gi, techs);
   };
 
-  // Moves a technology out of the uncategorised bucket into a real category,
-  // refusing when the target already holds something with the same name.
   const moveToCategory = (gi, ti, catId) => {
     const cat = categories.find((c) => c.id === catId);
     const src = groups[gi]?.technologies?.[ti];
@@ -167,7 +150,6 @@ export default function TechStackEditor({ value, onChange }) {
 
         return (
           <div key={cat.id} className="rounded-lg border border-white/10 bg-black/20 p-3">
-            {/* Category header — position comes from the global category order */}
             <div className="flex flex-wrap items-center gap-2">
               <h4 className="min-w-0 flex-1 truncate text-sm font-semibold text-white">{cat.name || "(নামহীন)"}</h4>
               <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-xs text-zinc-400">
@@ -195,7 +177,6 @@ export default function TechStackEditor({ value, onChange }) {
               </div>
             </div>
 
-            {/* Technologies in this category */}
             <div className="mt-3 space-y-2">
               {techs.length === 0 ? (
                 <p className="text-xs text-zinc-500">এই category-তে এখনো কোনো technology যোগ করা হয়নি।</p>
@@ -204,7 +185,6 @@ export default function TechStackEditor({ value, onChange }) {
               {techs.map((t, ti) => (
                 <div key={`${cat.id}-${ti}`} className="flex flex-wrap items-center gap-2 rounded-md border border-white/10 bg-black/30 p-2">
                   {t.icon ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={t.icon} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 object-contain" />
                   ) : (
                     <span className="h-[18px] w-[18px] shrink-0 rounded border border-white/10" />
@@ -248,7 +228,6 @@ export default function TechStackEditor({ value, onChange }) {
                 </div>
               ))}
 
-              {/* Add technology: from Icons table, or custom name + icon URL */}
               <div className="flex gap-2">
                 <select
                   value={pick}
@@ -313,8 +292,6 @@ export default function TechStackEditor({ value, onChange }) {
         );
       })}
 
-      {/* Uncategorized bucket: technologies the admin has not filed yet. The
-          public page does not render these; here they can be filed or deleted. */}
       {groups.map((g, gi) =>
         g.id === null && (g.technologies || []).length > 0 ? (
           <div key={`loose-${gi}`} className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
@@ -334,7 +311,6 @@ export default function TechStackEditor({ value, onChange }) {
               {(g.technologies || []).map((t, ti) => (
                 <div key={ti} className="flex flex-wrap items-center gap-2 rounded-md border border-white/10 bg-black/30 p-2">
                   {t.icon ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={t.icon} alt="" width={18} height={18} className="h-[18px] w-[18px] shrink-0 object-contain" />
                   ) : (
                     <span className="h-[18px] w-[18px] shrink-0 rounded border border-white/10" />

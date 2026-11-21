@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { boxCls, hintCls, inputCls } from "../format/ui";
 
-// Bulk text → entries. Accepts "1. foo 2. bar" (inline or with newlines)
-// or plain one-per-line text; leading numbers are stripped.
 export function parseNumberedList(text) {
   const t = String(text || "").trim();
   if (!t) return [];
@@ -133,10 +131,6 @@ export function StringListEditor({ value, onChange, itemLabel = "entry" }) {
   );
 }
 
-// Bulk text → timeline phases. One phase per line:
-//   Phase 1 | Planning | Designed the architecture
-//   Week 2 | Build | Implemented the API
-// A leading "1." number is stripped; missing parts become "".
 export function parseTimelineBulk(text) {
   return String(text || "")
     .split(/\n+/)

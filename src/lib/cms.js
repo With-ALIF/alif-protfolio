@@ -1,8 +1,3 @@
-// Server-side CMS bundle. Supabase is the single source of truth for all
-// portfolio content — there are no local data-file fallbacks. Every shape is
-// guaranteed to be safe to render (arrays stay arrays, `profile.socials`
-// stays an object) so a database outage degrades to empty sections instead
-// of throwing.
 import { createClient } from "@supabase/supabase-js";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -35,22 +30,11 @@ async function fetchTable(name, orderBy = "sort_order") {
 
 const bySort = (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
 
-// Match key for technology/tag names. Case- and whitespace-insensitive but
-// punctuation-preserving, so "Java Script" matches "JavaScript" while "C" and
-// "C++" stay distinct.
 const tagKey = (name) => String(name || "").toLowerCase().replace(/\s+/g, "");
 
-// Groups a project's technologies under the global category list, in the
-// admin-defined category order. Rules the public page relies on: a nameless
-// technology is dropped, and a category left with no technologies is dropped
-// too. Technologies that belong to no category are NOT rendered here — the
-// public page only shows filed categories. The admin still lists them (see
-// loadDetails) so they can be put in a category instead of vanishing.
 function groupTechnologies(categoryRows, techRows, resolveIcon) {
   const groups = [];
   const index = new Map();
-  // Trim before the emptiness check: " " is truthy in JS and would otherwise
-  // keep a nameless chip (and its category) alive on the public page.
   const toTech = (t) => ({ name: String(t.name ?? "").trim(), icon: resolveIcon(t) });
 
   for (const row of categoryRows || []) {
@@ -136,7 +120,6 @@ export async function getCmsBundle() {
     fetchTable("portfolio_tech_categories"),
   ]);
 
-  // --- site / hero / about ---
   const profRow = profileRows?.[0];
   const socials = {};
   for (const s of socialRows || []) {
@@ -173,7 +156,6 @@ export async function getCmsBundle() {
     paragraphs: Array.isArray(paraRows) ? paraRows.map((r) => r.body ?? "") : [],
   };
 
-  // --- journey / awards ---
   const journey = {
     items: (() => {
       if (!journeyRows) return [];
@@ -200,8 +182,6 @@ export async function getCmsBundle() {
     .filter((a) => a.isPublished !== false)
     .sort(bySort);
 
-  // --- projects + details ---
-  // Tags resolve via portfolio_project_tags → portfolio_tags (ordered by tag sort_order).
   const tagById = {};
   const tagByName = new Map();
   for (const t of tagRows || []) {
@@ -226,7 +206,6 @@ export async function getCmsBundle() {
     .filter((p) => p.isPublished !== false)
     .sort(bySort);
 
-  // Group detail child rows by detail_id.
   const groupChildren = (rows) => {
     const m = {};
     for (const r of rows || []) {
@@ -251,7 +230,6 @@ export async function getCmsBundle() {
   for (const c of techCategoryRows || []) techCategoryName[c.id] = String(c.name ?? "");
   const studies = {};
   for (const row of detailRows || []) {
-    // Primary link: project_id → project slug. Fallback: row slug.
     const key = (row.project_id && slugByProjectId[row.project_id]) || row.slug;
     if (!key) continue;
     const stats = {};
@@ -272,16 +250,12 @@ export async function getCmsBundle() {
       status: row.status ?? "Planned",
       featured: !!row.featured,
       tags: projectTags(row.project_id),
-      // Icon URL resolves live from the tag row via tag_id (UUID link);
-      // the stored copy is only a fallback.
       technologies: (techByDetail[row.id] || []).map((t) => ({
         name: t.name ?? "",
         icon: (t.tag_id && tagById[t.tag_id]?.icon) || t.icon || "",
-        // Carried through so the project card can filter chips by category.
         categoryId: t.category_id ?? null,
         categoryName: techCategoryName[t.category_id] ?? "",
       })),
-      // Same technologies, grouped by admin-defined category for the details page.
       techCategories: groupTechnologies(
         techCategoryRows || [],
         techByDetail[row.id] || [],
@@ -306,13 +280,6 @@ export async function getCmsBundle() {
     };
   }
 
-  // --- skills / tools ---
-  // Icons resolve per row through the tag_id foreign key, so two rows that
-  // merely look alike ("C" vs "C++") can never overwrite each other the way
-  // they did when icons were collected into one name-keyed lookup object.
-  // The tag_id is only trusted when the linked tag actually carries the same
-  // name; otherwise fall back to a punctuation-preserving name match, and
-  // finally to the row's own icon column.
   const resolveIcon = (row) => {
     const linked = row.tag_id ? tagById[row.tag_id] : null;
     if (linked?.icon && tagKey(linked.name) === tagKey(row.name)) return linked.icon;
@@ -321,7 +288,6 @@ export async function getCmsBundle() {
     return row.icon || "";
   };
 
-  // Rows without a `group` land in "Other" rather than being discarded.
   let skillGroups = [];
   if (skillRows) {
     const order = ["Languages", "Frameworks", "Backend Services"];
@@ -337,10 +303,6 @@ export async function getCmsBundle() {
     ];
   }
 
-  // Tools live in portfolio_skills with group="Tools", so they show up in the
-// grouping below on their own. The old portfolio_tools table is unused.
-
-  // --- education / experience / services ---
   const education = (educationRows || [])
     .map((r) => ({
       id: r.id,
@@ -397,7 +359,6 @@ export async function getSiteSection() {
   return bundle.site;
 }
 
-// Small, single-table lookup for the public resume download route.
 export async function getResumeInfo() {
   const rows = await fetchTable("portfolio_profiles", "created_at");
   const profile = rows?.[0];

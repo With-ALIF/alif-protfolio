@@ -1,11 +1,7 @@
-
-
 import "./globals.css";
 import SiteChrome from "./components/shared/SiteChrome";
 import { getSiteSection } from "@/lib/cms";
 
-// Bump whenever the favicon/apple-icon artwork changes, to invalidate caches
-// that are keyed by the icon URL rather than the file contents.
 const ICON_VERSION = 2;
 
 export const metadata = {
@@ -52,21 +48,6 @@ export const metadata = {
     google: "j1fBRN3Flk5eKnQu8mRrJp8AmBoDyQsE5yXrA-Au3aU",
   },
   icons: {
-    // Declared explicitly instead of via app-directory file conventions
-    // (src/app/icon.*), because defining `icons` at all makes Next drop the
-    // file conventions from the head.
-    //
-    // Ordering matters. Google fetches /favicon.ico at the site root by
-    // convention, so it is listed first and carries the full 16/32/48 size
-    // set; browsers that prefer vector pick the SVG, and the 512 PNG is the
-    // last-resort raster. Every entry renders the same artwork, so the
-    // winner is cosmetic. `shortcut` re-declares the ICO under the legacy
-    // rel name that older engines and some crawlers match on.
-    //
-    // ICON_VERSION is a cache-buster. Google keys its favicon cache on the
-    // icon URL, so replacing the file at the same URL can leave it serving the
-    // old artwork for weeks. Bump this whenever the icon artwork changes and
-    // the link href becomes a brand-new URL that must be fetched again.
     icon: [
       { url: `/favicon.ico?v=${ICON_VERSION}`, type: "image/x-icon", sizes: "16x16 32x32 48x48" },
       { url: `/favicon.svg?v=${ICON_VERSION}`, type: "image/svg+xml", sizes: "any" },

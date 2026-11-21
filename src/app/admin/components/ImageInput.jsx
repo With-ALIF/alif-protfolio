@@ -31,7 +31,6 @@ export default function ImageInput({ value, onChange, placeholder }) {
         <input ref={fileRef} type="file" accept="image/*" onChange={pick} className="hidden" />
       </div>
       {value ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img src={value} alt="preview" className="mt-2 h-16 w-16 rounded-lg border border-white/10 object-cover" />
       ) : null}
       {status ? <p className="mt-1 text-xs text-zinc-500">{status}</p> : <p className="mt-1 text-xs text-zinc-600">Upload = auto resize to ≤100KB.</p>}

@@ -48,8 +48,6 @@ const EducationSection = ({ items }) => {
     el.scrollTo({ left: el.scrollLeft + (dir * el.scrollWidth) / list.length, behavior: "smooth" });
   };
 
-  // Counter and progress are based on cards, not pages, so the number always
-  // matches how many entries exist (mobile 1-up shows 01 / 06).
   const seen = Math.min(page * perView + perView, list.length);
   const progress = list.length > 0 ? (seen / list.length) * 100 : 0;
 
@@ -93,7 +91,6 @@ const EducationSection = ({ items }) => {
               className="w-full shrink-0 snap-start pr-4 last:pr-0 lg:w-1/2 lg:pr-4 lg:[&:nth-child(2n)]:pr-4"
             >
               <div className="flex h-full flex-col rounded-xl border border-white/10 bg-black/20 p-5">
-                {/* Institution identity */}
                 <div className="flex items-start gap-3.5">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/95 p-1">
                     {edu.logo ? (
@@ -116,7 +113,6 @@ const EducationSection = ({ items }) => {
 
                 <hr className="my-4 border-white/10" />
 
-                {/* Degree is the anchor of the card */}
                 <h3 className="text-xl font-bold leading-snug tracking-tight sm:text-2xl">{edu.degree}</h3>
                 {edu.description ? (
                   <p className="mt-2 text-sm leading-6 text-zinc-400">{edu.description}</p>
@@ -134,7 +130,6 @@ const EducationSection = ({ items }) => {
           ))}
         </div>
 
-        {/* Progress */}
         <div className="mt-5 flex items-center justify-between text-sm text-zinc-400">
           <span>Academic Journey</span>
           <span className="tabular-nums">

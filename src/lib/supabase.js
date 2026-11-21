@@ -1,4 +1,3 @@
-// Browser-side Supabase client (public reads + admin auth session).
 import { createClient } from "@supabase/supabase-js";
 
 export const ADMIN_EMAIL = "alifbrur16@gmail.com";

@@ -3,7 +3,6 @@
 const GUIDE = {
   alif_site_content: {
     title: "Site Content images",
-    // Site content covers several sections, and only some of them have images.
     sections: {
       site: [
         {
@@ -169,8 +168,6 @@ const GUIDE = {
 
 export default function ImageGuide({ activeName, section }) {
   const guide = GUIDE[activeName];
-  // Site content spans several sections with different image needs, so pick the
-  // rows for the section actually open in the editor.
   const rows =
     activeName === "alif_site_content"
       ? guide?.sections?.[section] ?? guide?.sections?.site ?? []

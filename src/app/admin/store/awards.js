@@ -1,4 +1,3 @@
-// Awards section items <-> portfolio_awards rows (diff by id).
 export async function saveAwardsSection(sb, data) {
   const items = Array.isArray(data?.items) ? data.items : [];
   const ex = await sb.from("portfolio_awards").select("id");

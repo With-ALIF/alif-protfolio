@@ -5,9 +5,6 @@ import { getSupabase } from "@/lib/supabase";
 import { supportsTagId } from "../store/tags";
 import { inputCls } from "../format/ui";
 
-// Database name picker: Backend Services skill group. onPick(name, icon, tagId).
-// The icon is resolved live through the skill's tag link, so tag URL
-// changes apply without re-saving.
 export default function DbSelector({ value, onPick }) {
   const [skills, setSkills] = useState([]);
   const [tagIcons, setTagIcons] = useState({});

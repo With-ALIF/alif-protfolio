@@ -59,13 +59,11 @@ const AwardsSection = ({ items }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Ambient glow behind the section */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-0 -z-10 h-64 w-[36rem] max-w-full -translate-x-1/2 rounded-full bg-blue-500/15 blur-[100px]"
       />
 
-      {/* Header */}
       <div className="text-center">
         <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-xs font-medium uppercase tracking-widest text-blue-300">
           <Trophy className="h-3.5 w-3.5" aria-hidden="true" />
@@ -83,7 +81,6 @@ const AwardsSection = ({ items }) => {
         </p>
       </div>
 
-      {/* Track wrapper: bleeds to screen edge on mobile so the next card peeks in */}
       <div className="relative -mx-4 mt-4 sm:mx-0 sm:mt-10">
         <div
           ref={trackRef}
@@ -99,7 +96,6 @@ const AwardsSection = ({ items }) => {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.24) }}
             >
-              {/* Top highlight line */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -158,7 +154,6 @@ const AwardsSection = ({ items }) => {
           ))}
         </div>
 
-        {/* Right-edge fade: hints there is more content (mobile only) */}
         {hasMany ? (
           <div
             aria-hidden="true"
@@ -169,7 +164,6 @@ const AwardsSection = ({ items }) => {
         ) : null}
       </div>
 
-      {/* Dots + arrows (mobile only) */}
       {hasMany ? (
         <div className="mt-4 flex items-center justify-center gap-4 sm:hidden">
 

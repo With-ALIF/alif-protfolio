@@ -1,4 +1,3 @@
-/* Tailwind entry — touch to bust stale Vercel build cache */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -88,8 +87,6 @@ button:disabled {
   animation: marquee 20s linear infinite;
 }
 
-
-
 @keyframes slideUpDown {
   0% {
     transform: translateY(20px);
@@ -119,3 +116,4 @@ button:disabled {
 .scroll-motion-leftright {
   animation: slideLeftRight 0.6s ease-out forwards;
 }
+

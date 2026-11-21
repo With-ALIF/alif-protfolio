@@ -1,17 +1,11 @@
-// Server-side GitHub data layer for the homepage snapshot.
-//
-// All GitHub requests happen on the server. The access token is read from the
-// environment and never returned to the client. Only public counters are
-// exposed to the client.
 import { unstable_cache } from "next/cache";
 
 const API = "https://api.github.com";
 const GRAPHQL_API = "https://api.github.com/graphql";
-const CACHE_TTL_SECONDS = 5 * 60; // refresh every 5 minutes
+const CACHE_TTL_SECONDS = 5 * 60;
 const CACHE_BUCKET_MS = CACHE_TTL_SECONDS * 1000;
 const MAX_REPO_PAGES = 5;
 const DEFAULT_USERNAME = "With-ALIF";
-
 
 export class GitHubApiError extends Error {
   constructor(code, message, extra = {}) {
@@ -67,7 +61,6 @@ async function githubFetch(url, { token, allowAnonymousRetry = true } = {}) {
     throw new GitHubApiError("network", "GitHub could not be reached right now.");
   }
 
-  // A stale or revoked token should not take the public profile down with it.
   if (response.status === 401 && token && allowAnonymousRetry) {
     return githubFetch(url, { token: null, allowAnonymousRetry: false });
   }
@@ -165,9 +158,6 @@ async function fetchRepositories(username, token) {
     if (data.length < 100) break;
   }
 
-  // `type=owner` still only exposes public data for another user. Filter again
-  // so a private repository can never leak into the public page if GitHub ever
-  // changes the response shape.
   return {
     repos: all.filter((repo) => !repo.isPrivate && repo.visibility === "public"),
     rateLimit,
@@ -459,8 +449,6 @@ async function fetchContributions(username, token, createdAt) {
     try {
       return await fetchContributionsGraphQL(username, token, createdAt);
     } catch {
-      // Fall through to the public graph so a GraphQL permission/limit issue
-      // never produces an invented or empty-looking chart.
     }
   }
 
@@ -486,8 +474,6 @@ function publicError(error) {
   };
 }
 
-// Homepage snapshot: public profile counters only. It deliberately skips the
-// repository detail payload.
 async function loadGitHubStats() {
   const username = getGitHubUsername();
   const token = String(process.env.GITHUB_TOKEN ?? "").trim();
@@ -547,11 +533,6 @@ async function loadGitHubStats() {
   };
 }
 
-// unstable_cache is stale-while-revalidate: the request that discovers an
-// expired entry receives the old value while the refresh happens in the
-// background. Putting the current five-minute bucket in the cache key makes
-// the first request of each bucket a hard miss, so it waits for fresh data
-// instead of showing the previous snapshot once.
 const getCachedGitHubStats = unstable_cache(
   async () => loadGitHubStats(),
   ["github-home-stats-v5"],

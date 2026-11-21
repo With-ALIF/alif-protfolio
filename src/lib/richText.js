@@ -1,10 +1,5 @@
 import { createElement } from "react";
 
-// Inline rich text for admin-entered content.
-//   **word**    → bold
-//   {{word}}    → bold
-//   **{{word}}** → bold
-// Everything else renders as plain (escaped) text — no HTML injection.
 const TOKEN = /(\*\*.+?\*\*|\{\{.+?\}\})/g;
 
 function toNode(part, key) {

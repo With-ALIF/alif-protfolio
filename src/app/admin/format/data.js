@@ -4,7 +4,7 @@ import { galleryToText, statsToText, techToText, timelineToText } from "./text";
 export const blankSiteData = (section) => {
   if (section === "site")
     return {
-      profile: { name: "", handle: "", role: "", headline: "", value: "", email: "", location: "", resumeUrl: "", profileImage: "", socials: { github: "", linkedin: "", facebook: "", telegram: "", whatsapp: "", instagram: "" } },
+      profile: { name: "", handle: "", role: "", headline: "", value: "", email: "", location: "", resumeUrl: "", profileImage: "", socials: { github: "", linkedin: "", facebook: "", telegram: "", whatsapp: "", instagram: "", youtube: "" } },
       nav: [],
     };
   if (section === "hero") return { headline: "", value: "", highlights: [] };
@@ -37,8 +37,6 @@ export const pretty = (field, value) => {
   if (field.type === "lines") return Array.isArray(value) ? value.join("\n") : typeof value === "string" ? value : "";
   if (field.type === "techlines") return techToText(value);
   if (field.type === "techselect") return Array.isArray(value) ? value : [];
-  // Without this the generic object fallback below stringifies the array, and
-  // the editor then reads it as "not an array" and shows nothing.
   if (field.type === "techstack") return Array.isArray(value) ? value : [];
   if (field.type === "gallerylines") return galleryToText(value);
   if (field.type === "galleryedit") return Array.isArray(value) ? value : [];
