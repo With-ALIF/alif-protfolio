@@ -1,7 +1,7 @@
 "use client";
 
 import ImageInput from "./ImageInput";
-import { boxCls, hintCls, inputCls } from "../format/ui";
+import { boxCls, inputCls } from "../format/ui";
 
 export default function GalleryEditor({ value, onChange }) {
   const items = Array.isArray(value) ? value : [];
@@ -11,7 +11,6 @@ export default function GalleryEditor({ value, onChange }) {
   const remove = (idx) => onChange(items.filter((_, i) => i !== idx));
   return (
     <div className="space-y-3">
-      <p className={hintCls}>Write a title and upload an image (auto-resized to ≤100KB).</p>
       {items.map((it, idx) => (
         <div key={idx} className={boxCls}>
           <div className="flex items-center justify-between">

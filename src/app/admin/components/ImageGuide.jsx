@@ -62,7 +62,7 @@ const GUIDE = {
         format: "WebP / JPG",
         ratio: "16 : 9 (landscape)",
         size: "Recommended 1280 × 720 px · Min 800 × 450 px",
-        note: "Hero banner on the case-study page (aspect-video, object-cover).",
+        note: "Auto-synced from Project card image (view only).",
       },
       {
         field: "gallery → image",

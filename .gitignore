@@ -49,6 +49,5 @@ eslint.config.mjs
 !postcss.config.mjs
 !tailwind.config.mjs
 
-# Database / SQL files
-#*.sql
-#/supabase
+# Database migrations
+/supabase/migrations/

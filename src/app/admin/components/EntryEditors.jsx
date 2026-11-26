@@ -25,24 +25,11 @@ export function StringListEditor({ value, onChange, itemLabel = "entry" }) {
   const update = (idx, v) => onChange(items.map((it, i) => (i === idx ? v : it)));
   const add = () => onChange([...items, ""]);
   const remove = (idx) => onChange(items.filter((_, i) => i !== idx));
-  const move = (idx, dir) => {
-    const to = idx + dir;
-    if (to < 0 || to >= items.length) return;
-    const next = [...items];
-    [next[idx], next[to]] = [next[to], next[idx]];
-    onChange(next);
-  };
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <p className={hintCls}>Numbered automatically — “+ Add” creates the next number. Wrap a word in <span className="font-mono">**word**</span> to bold it on the site.</p>
+      <div className="flex items-center justify-end">
         <span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-zinc-400">{items.length}</span>
       </div>
-      {items.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-white/15 p-4 text-sm text-zinc-500">
-          No {itemLabel} yet — click “+ Add {itemLabel}” below.
-        </p>
-      ) : null}
       {items.map((it, idx) => (
         <div key={idx} className="flex gap-2">
           <span className="mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/10 text-sm font-semibold text-blue-200">
@@ -55,30 +42,12 @@ export function StringListEditor({ value, onChange, itemLabel = "entry" }) {
             placeholder={`${idx + 1}. ${itemLabel} text…`}
             className={`${inputCls} min-w-0`}
           />
-          <div className="mt-2 flex shrink-0 flex-col gap-1">
-            <button
-              type="button"
-              onClick={() => move(idx, -1)}
-              disabled={idx === 0}
-              aria-label="Move up"
-              className="rounded border border-white/10 px-2 text-xs text-zinc-300 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30"
-            >
-              ↑
-            </button>
-            <button
-              type="button"
-              onClick={() => move(idx, 1)}
-              disabled={idx === items.length - 1}
-              aria-label="Move down"
-              className="rounded border border-white/10 px-2 text-xs text-zinc-300 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30"
-            >
-              ↓
-            </button>
+          <div className="mt-2 flex shrink-0 items-start">
             <button
               type="button"
               onClick={() => remove(idx)}
               aria-label="Remove"
-              className="rounded border border-red-400/30 px-2 text-xs text-red-300 hover:bg-red-500/10"
+              className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 hover:bg-red-500/10"
             >
               ×
             </button>
@@ -100,13 +69,12 @@ export function StringListEditor({ value, onChange, itemLabel = "entry" }) {
       {showBulk ? (
         <div className={boxCls}>
           <p className="text-xs text-zinc-400">
-            Paste numbered text — <span className="font-mono">1. … 2. … 3. …</span> or one per line. Numbers are stripped, entries keep the list order.
+            Paste numbered text — <span className="font-mono">1. … 2. … 3. …</span>
           </p>
           <textarea
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
             rows={5}
-            placeholder={`1. first ${itemLabel}… 2. second ${itemLabel}…`}
             className={`${inputCls} font-mono text-sm`}
           />
           <div className="flex items-center justify-between gap-2">
@@ -157,14 +125,13 @@ export function TimelineEditor({ value, onChange }) {
   const remove = (idx) => onChange(items.filter((_, i) => i !== idx));
   return (
     <div className="space-y-3">
-      <p className={hintCls}>Each phase is a separate card — write Date, Title and Detail as plain text.</p>
       {items.map((it, idx) => (
         <div key={idx} className={boxCls}>
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Phase #{idx + 1}</p>
             <button type="button" onClick={() => remove(idx)} className="rounded-full border border-red-400/30 px-3 py-1 text-xs text-red-300 hover:bg-red-500/10">Remove</button>
           </div>
-          <label className="block"><span className="text-xs text-zinc-400">Date (Phase 1 / Week 2...)</span><input value={it.date || ""} onChange={(e) => update(idx, { date: e.target.value })} className={inputCls} placeholder="Phase 1" /></label>
+          <label className="block"><span className="text-xs text-zinc-400">Date</span><input value={it.date || ""} onChange={(e) => update(idx, { date: e.target.value })} className={inputCls} /></label>
           <label className="block"><span className="text-xs text-zinc-400">Title</span><input value={it.title || ""} onChange={(e) => update(idx, { title: e.target.value })} className={inputCls} /></label>
           <label className="block"><span className="text-xs text-zinc-400">Detail</span><textarea value={it.detail || ""} onChange={(e) => update(idx, { detail: e.target.value })} rows={2} className={inputCls} /></label>
         </div>
@@ -188,7 +155,6 @@ export function TimelineEditor({ value, onChange }) {
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
             rows={5}
-            placeholder={"Phase 1 | Planning | Designed the UI\nWeek 2 | Build | Implemented the API"}
             className={`${inputCls} font-mono text-sm`}
           />
           <div className="flex items-center justify-between gap-2">

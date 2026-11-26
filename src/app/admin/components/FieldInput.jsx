@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { SITE_SECTIONS } from "../tables";
 import { boxCls, hintCls, inputCls } from "../format/ui";
 import SiteContentEditor from "../editors/SiteContentEditor";
@@ -11,9 +12,94 @@ import IconSelector from "./IconSelector";
 import GalleryEditor from "./GalleryEditor";
 import { StringListEditor, TimelineEditor, StatsEditor } from "./EntryEditors";
 
+function SelectInput({ field, value, onChange }) {
+  const options = field.options || [];
+  const isKnown = options.includes(value);
+  const [isCustom, setIsCustom] = useState(!isKnown && Boolean(value));
+
+  if (!field.allowCustom) {
+    return (
+      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className={`${inputCls} [color-scheme:dark]`}>
+        {options.map((opt) => (
+          <option key={opt} value={opt} className="bg-zinc-900 text-white">{opt}</option>
+        ))}
+      </select>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <select
+          value={isCustom ? "__custom__" : (value || options[0] || "")}
+          onChange={(e) => {
+            if (e.target.value === "__custom__") {
+              setIsCustom(true);
+              if (isKnown) onChange("");
+            } else {
+              setIsCustom(false);
+              onChange(e.target.value);
+            }
+          }}
+          className={`${inputCls} min-w-0 flex-1 [color-scheme:dark]`}
+        >
+          {options.map((opt) => (
+            <option key={opt} value={opt} className="bg-zinc-900 text-white">
+              {opt}
+            </option>
+          ))}
+          <option value="__custom__" className="bg-zinc-900 text-white">
+            — Custom status —
+          </option>
+        </select>
+        {isCustom ? (
+          <button
+            type="button"
+            onClick={() => {
+              setIsCustom(false);
+              onChange(options[0] || "");
+            }}
+            className="mt-2 shrink-0 rounded-lg border border-white/15 px-3 text-xs hover:bg-white/10"
+          >
+            Presets
+          </button>
+        ) : null}
+      </div>
+      {isCustom ? (
+        <input
+          type="text"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Enter custom status…"
+          className={inputCls}
+          autoFocus
+        />
+      ) : null}
+    </div>
+  );
+}
+
 export default function FieldInput({ field, value, tagId, section, projectOptions, onChange, onPickName, onPickTagId, disabled }) {
   if (field.type === "hidden" || field.type === "tagref") return null;
-  if (field.type === "image") return <ImageInput value={value} onChange={onChange} />;
+  if (field.type === "image") {
+    if (field.readOnly) {
+      return (
+        <div>
+          <input
+            type="text"
+            value={value ?? ""}
+            readOnly
+            title="Auto-synced from project, not editable"
+            className={`${inputCls} cursor-not-allowed text-zinc-400`}
+          />
+          {value ? (
+            <img src={value} alt="preview" className="mt-2 h-16 w-16 rounded-lg border border-white/10 object-cover" />
+          ) : null}
+        </div>
+      );
+    }
+    return <ImageInput value={value} onChange={onChange} />;
+  }
   if (field.type === "techstack") return <TechStackEditor value={value} onChange={onChange} />;
   if (field.type === "tagselect") return <TagSelector value={value} onChange={onChange} />;
   if (field.type === "iconselect")
@@ -89,13 +175,7 @@ export default function FieldInput({ field, value, tagId, section, projectOption
       </>
     );
   if (field.type === "select")
-    return (
-      <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className={`${inputCls} [color-scheme:dark]`}>
-        {(field.options || []).map((opt) => (
-          <option key={opt} value={opt} className="bg-zinc-900 text-white">{opt}</option>
-        ))}
-      </select>
-    );
+    return <SelectInput field={field} value={value} onChange={onChange} />;
   if (field.type === "project")
     return (
       <select value={value ?? ""} onChange={(e) => onChange(e.target.value)} className={`${inputCls} [color-scheme:dark]`}>

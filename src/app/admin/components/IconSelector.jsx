@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
-import { hintCls, inputCls } from "../format/ui";
+import { inputCls } from "../format/ui";
 
 export default function IconSelector({ value, tagId, onPick, onPickTagId }) {
   const [tags, setTags] = useState([]);
@@ -37,7 +37,6 @@ export default function IconSelector({ value, tagId, onPick, onPickTagId }) {
 
   return (
     <div>
-      <p className={hintCls}>Icons table theke select koro — URL nije likhte hobe na.</p>
       <select value={current ? current.icon : ""} onChange={(e) => pick(e.target.value)} className={`${inputCls} [color-scheme:dark]`}>
         <option value="" className="bg-zinc-900 text-white">— select icon —</option>
         {tags.map((t) => (

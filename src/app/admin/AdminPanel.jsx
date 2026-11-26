@@ -9,12 +9,11 @@ import RowList, { StatusBanner } from "./components/RowList";
 import EditorPanel from "./components/EditorPanel";
 import ImageGuide from "./components/ImageGuide";
 import ConfirmModal from "./components/ConfirmModal";
-import { saveProjectAndSync, syncAllProjectsToDetails } from "./syncProject";
+import { saveProjectAndSync } from "./syncProject";
 
 export default function AdminPanel({ user }) {
   const [activeName, setActiveName] = useState(TABLES[0].name);
   const [pendingDelete, setPendingDelete] = useState(null);
-  const [showSync, setShowSync] = useState(false);
   const table = TABLES.find((t) => t.name === activeName);
   const s = useAdminTable(table, activeName);
 
@@ -35,11 +34,6 @@ export default function AdminPanel({ user }) {
       <AdminHeader user={user} />
       <div className="mx-auto max-w-7xl px-4 py-6">
         <TableTabs tables={TABLES} activeName={activeName} onChange={setActiveName} />
-        {activeName === "alif_projects" ? (
-          <button onClick={() => setShowSync(true)} className="mt-3 rounded-full border border-white/15 px-4 py-2 text-sm hover:bg-white/10">
-            Sync all → Details
-          </button>
-        ) : null}
         <StatusBanner error={s.error} notice={s.notice} />
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.2fr] xl:grid-cols-[1fr_1.2fr_0.9fr]">
           <RowList
@@ -77,18 +71,6 @@ export default function AdminPanel({ user }) {
           message={`${table.listBy(pendingDelete)}${activeName === "alif_projects" ? " Its case-study details will be deleted too (cascade)." : ""}`}
           onConfirm={confirmDelete}
           onCancel={() => setPendingDelete(null)}
-        />
-      ) : null}
-      {showSync ? (
-        <ConfirmModal
-          title="Sync all projects to details?"
-          message="Title, slug, description, image and tags of every project will be copied to its Project Details row."
-          confirmLabel="Sync"
-          onConfirm={async () => {
-            setShowSync(false);
-            await syncAllProjectsToDetails(s);
-          }}
-          onCancel={() => setShowSync(false)}
         />
       ) : null}
     </div>
